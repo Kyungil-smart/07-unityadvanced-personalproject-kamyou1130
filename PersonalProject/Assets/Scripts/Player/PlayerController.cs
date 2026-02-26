@@ -1,17 +1,29 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamagable
 {
+    // CharacterController 컴포넌트 정보를 가져오기 위한 필드
     [SerializeField] private CharacterController _characterController;
 
+    // 이동 속도를 설정하기 위한 필드
     [SerializeField] private float _zoomMoveSpeed;
     [SerializeField] private float _normalMoveSpeed;
+    
+    // 플레이어 데이터 접근 필드(MVP 패턴)
+    private PlayerData _playerData;
 
     // 공격 모드에 따른 이동 속도 필드
     private float _moveSpeed;
     private float _rotateSpeed = 10f;
+    
+    // 공격 가능 상태 접근 필드
+    private bool _attackable;
+    
+    // 대쉬 쿨타임 접근 필드
+    [SerializeField] private float _dashCooltime;
     
     // 플레이어 오브젝트 회전을 위한 필드
     private Ray _rotateRay;
@@ -24,9 +36,6 @@ public class PlayerController : MonoBehaviour
     private Vector3 _moveDir;
     private bool _isRightPressed;
     private bool _isLeftPressed;
-    
-    // Collider 충돌 확인을 위한 필드
-    private SphereCollider _collider;
     
     private void Awake()
     {
@@ -63,18 +72,13 @@ public class PlayerController : MonoBehaviour
         }
         
         NormalMovement();
-
-        if (_isLeftPressed)
-        {
-            Attack();
-        }
     }
 
     private void Init()
     {
         if (_characterController == null) _characterController = GetComponent<CharacterController>();
-        _collider = GetComponentInChildren<SphereCollider>();
         _inputAction = new NewInputAction();
+        _playerData = new PlayerData();
         _camera = Camera.main;
     }
     
@@ -104,17 +108,21 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision other)
+    private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.CompareTag("Monster"))
+        if (other.gameObject.CompareTag("Monster") && _isLeftPressed && _isRightPressed)
         {
-            
+            MonsterController m = other.gameObject.GetComponent<MonsterController>();
+            m.TakeDamage(_playerData.PlayerAttackDamage);
+            Debug.Log("공격!");
+            _isLeftPressed = false;
         }
     }
 
-    private void Attack()
+    private IEnumerator AttackableCount()
     {
-        
+        yield return new WaitForSeconds(0.05f);
+        _isLeftPressed = false;
     }
 
     private void OnMove(InputAction.CallbackContext ctx)
@@ -138,6 +146,13 @@ public class PlayerController : MonoBehaviour
         {
             _isLeftPressed = true;
         }
+
+        StartCoroutine(AttackableCount());
+    }
+
+    public void TakeDamage(int value)
+    {
+        _playerData.PlayerHp -= value;
     }
 
 }

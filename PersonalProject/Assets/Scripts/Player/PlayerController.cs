@@ -1,8 +1,8 @@
-using System;
 using System.Collections;
 using UnityEditor.Searcher;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Random = System.Random;
 
 public class PlayerController : MonoBehaviour, IDamagable
 {
@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     private float _rotateSpeed = 10f;
     
     // 플레이어 공격 가능 상태 접근 필드
-    private bool _attackable;
+    private float _attackableTime = 0.5f;
     
     // 플레이어 대쉬 접근 필드
     [SerializeField] private float _dashSpeed;
@@ -40,6 +40,11 @@ public class PlayerController : MonoBehaviour, IDamagable
     private bool _isRightPressed;
     private bool _isLeftPressed;
     
+    // 플레이어 애니메이션 접근 필드
+    private Animator _animator;
+
+    private MonsterController _monster;
+    
     private void Awake()
     {
         Init();
@@ -50,7 +55,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _inputAction.PlayerAction.Enable();
         
         _inputAction.PlayerAction.Move.performed += OnMove;
-        _inputAction.PlayerAction.Move.canceled += OnMove;
+        _inputAction.PlayerAction.Move.canceled += MoveCancel;
         _inputAction.PlayerAction.Zoom.performed += OnZoom;
         _inputAction.PlayerAction.Zoom.canceled += ZoomCancel;
         _inputAction.PlayerAction.Attack.performed += OnAttack;
@@ -60,7 +65,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     private void OnDisable()
     {
         _inputAction.PlayerAction.Move.performed -= OnMove;
-        _inputAction.PlayerAction.Move.canceled -= OnMove;
+        _inputAction.PlayerAction.Move.canceled -= MoveCancel;
         _inputAction.PlayerAction.Zoom.performed -= OnZoom;
         _inputAction.PlayerAction.Zoom.canceled -= ZoomCancel;
         _inputAction.PlayerAction.Attack.performed -= OnAttack;
@@ -75,9 +80,13 @@ public class PlayerController : MonoBehaviour, IDamagable
         {
             RotateByMouse();
         }
-        
-        NormalMovement();
 
+        _attackableTime -= Time.deltaTime;
+        if (!_isLeftPressed)
+        {
+            Movement();
+        }
+        
         _playerData.CurrentDashCooltime += Time.deltaTime;
         if (_dashPressed)
         {
@@ -93,9 +102,10 @@ public class PlayerController : MonoBehaviour, IDamagable
         _playerData = new PlayerData();
         _camera = Camera.main;
         _dashPressed = false;
+        _animator = GetComponentInChildren<Animator>();
     }
     
-    private void NormalMovement()
+    private void Movement()
     {
         _moveDir = new Vector3(_moveInput.x, 0 , _moveInput.y);
         _moveSpeed = _isRightPressed ? _zoomMoveSpeed : _normalMoveSpeed;
@@ -123,19 +133,28 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private void OnTriggerStay(Collider other)
     {
+        if (_attackableTime > 0f) return;
         if (other.gameObject.CompareTag("Monster") && _isLeftPressed && _isRightPressed)
         {
-            MonsterController m = other.gameObject.GetComponent<MonsterController>();
-            m.TakeDamage(_playerData.PlayerAttackDamage);
+            _monster = other.gameObject.GetComponent<MonsterController>();
+            StartCoroutine(AttackTiming());
+            
             Debug.Log("공격!");
+            _attackableTime = 0.15f;
             _isLeftPressed = false;
         }
     }
 
+    // 마우스 좌클릭을 눌렀을때 0.05초 후에 false로 바꾸기 위한 코루틴
     private IEnumerator AttackableCount()
     {
+        _animator.SetBool("Attack", true);
+        int randIndex = UnityEngine.Random.Range(0, 3);
+        _animator.SetInteger("AttackIndex", randIndex);
+        
         yield return new WaitForSeconds(0.05f);
         _isLeftPressed = false;
+        _animator.SetBool("Attack", false);
     }
 
     private void Dash()
@@ -149,12 +168,18 @@ public class PlayerController : MonoBehaviour, IDamagable
     {
         float timer = Time.time;
         Vector3 moveDir = new Vector3(_moveInput.x, 0 , _moveInput.y);
-        
         while (timer + 0.2f > Time.time)
         {
             _characterController.Move(moveDir * (_dashSpeed * Time.deltaTime));
             yield return null;
         }
+    }
+
+    // 공격기능과 애니메이션 시간을 맞추기위한 코루틴
+    private IEnumerator AttackTiming()
+    {
+        yield return new WaitForSeconds(0.08f);
+        _monster.TakeDamage(_playerData.PlayerAttackDamage);
     }
 
     public void TakeDamage(int value)
@@ -165,16 +190,25 @@ public class PlayerController : MonoBehaviour, IDamagable
     private void OnMove(InputAction.CallbackContext ctx)
     {
         _moveInput = ctx.ReadValue<Vector2>();
+        _animator.SetFloat("MoveSpeed", Mathf.Abs(1f));
+    }
+
+    private void MoveCancel(InputAction.CallbackContext ctx)
+    {
+        _moveInput = Vector2.zero;
+        _animator.SetFloat("MoveSpeed", Mathf.Abs(0f));
     }
 
     private void OnZoom(InputAction.CallbackContext ctx)
     {
         _isRightPressed = true;
+        _animator.SetBool("Zoom", true);
     }
 
     private void ZoomCancel(InputAction.CallbackContext ctx)
     {
         _isRightPressed = false;
+        _animator.SetBool("Zoom", false);
     }
 
     private void OnAttack(InputAction.CallbackContext ctx)

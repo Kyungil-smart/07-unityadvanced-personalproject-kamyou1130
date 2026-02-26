@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,15 +6,28 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private CharacterController _characterController;
 
-    [SerializeField] private float _moveSpeed;
+    [SerializeField] private float _zoomMoveSpeed;
+    [SerializeField] private float _normalMoveSpeed;
 
+    // 공격 모드에 따른 이동 속도 필드
+    private float _moveSpeed;
+    private float _rotateSpeed = 10f;
+    
+    // 플레이어 오브젝트 회전을 위한 필드
     private Ray _rotateRay;
     public LayerMask _layerMask;
     private Camera _camera;
     
+    // New InputActionSystem 입력을 위한 필드
     private NewInputAction _inputAction;
     private Vector2 _moveInput;
-
+    private Vector3 _moveDir;
+    private bool _isRightPressed;
+    private bool _isLeftPressed;
+    
+    // Collider 충돌 확인을 위한 필드
+    private SphereCollider _collider;
+    
     private void Awake()
     {
         Init();
@@ -24,34 +38,55 @@ public class PlayerController : MonoBehaviour
         _inputAction.PlayerAction.Enable();
         
         _inputAction.PlayerAction.Move.performed += OnMove;
-        _inputAction.PlayerAction.Move.canceled += MoveCancel;
+        _inputAction.PlayerAction.Move.canceled += OnMove;
+        _inputAction.PlayerAction.Zoom.performed += OnZoom;
+        _inputAction.PlayerAction.Zoom.canceled += ZoomCancel;
+        _inputAction.PlayerAction.Attack.performed += OnAttack;
     }
 
     private void OnDisable()
     {
         _inputAction.PlayerAction.Move.performed -= OnMove;
-        _inputAction.PlayerAction.Move.canceled -= MoveCancel;
+        _inputAction.PlayerAction.Move.canceled -= OnMove;
+        _inputAction.PlayerAction.Zoom.performed -= OnZoom;
+        _inputAction.PlayerAction.Zoom.canceled -= ZoomCancel;
+        _inputAction.PlayerAction.Attack.performed -= OnAttack;
         
         _inputAction.PlayerAction.Disable();
     }
 
     private void Update()
     {
-        Movement();
-        RotateByMouse();
+        if (_isRightPressed)
+        {
+            RotateByMouse();
+        }
+        
+        NormalMovement();
+
+        if (_isLeftPressed)
+        {
+            Attack();
+        }
     }
 
     private void Init()
     {
         if (_characterController == null) _characterController = GetComponent<CharacterController>();
+        _collider = GetComponentInChildren<SphereCollider>();
         _inputAction = new NewInputAction();
         _camera = Camera.main;
     }
-
-    private void Movement()
+    
+    private void NormalMovement()
     {
-        Vector3 moveDir = transform.forward * _moveInput.y + transform.right * _moveInput.x;
-        _characterController.Move(moveDir * (_moveSpeed * Time.deltaTime));
+        _moveDir = new Vector3(_moveInput.x, 0 , _moveInput.y);
+        _moveSpeed = _isRightPressed ? _zoomMoveSpeed : _normalMoveSpeed;
+        _characterController.Move(_moveDir * (_moveSpeed * Time.deltaTime));
+        
+        if (_moveDir == Vector3.zero || _isRightPressed) return;
+        Quaternion targetRatate = Quaternion.LookRotation(_moveDir);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRatate, Time.deltaTime * _rotateSpeed);
     }
 
     private void RotateByMouse()
@@ -65,8 +100,21 @@ public class PlayerController : MonoBehaviour
             
             targetPoint.y = _characterController.transform.position.y;
             
-            transform.LookAt(hit.point);
+            transform.LookAt(targetPoint);
         }
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.CompareTag("Monster"))
+        {
+            
+        }
+    }
+
+    private void Attack()
+    {
+        
     }
 
     private void OnMove(InputAction.CallbackContext ctx)
@@ -74,9 +122,22 @@ public class PlayerController : MonoBehaviour
         _moveInput = ctx.ReadValue<Vector2>();
     }
 
-    private void MoveCancel(InputAction.CallbackContext ctx)
+    private void OnZoom(InputAction.CallbackContext ctx)
     {
-        _moveInput = Vector2.zero;
+        _isRightPressed = true;
+    }
+
+    private void ZoomCancel(InputAction.CallbackContext ctx)
+    {
+        _isRightPressed = false;
+    }
+
+    private void OnAttack(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed)
+        {
+            _isLeftPressed = true;
+        }
     }
 
 }

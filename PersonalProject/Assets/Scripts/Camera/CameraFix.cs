@@ -8,7 +8,7 @@ public class CameraFix : MonoBehaviour
 
     private void Awake()
     {
-        _offset = new Vector3(0f, 10f, -10f);
+        _offset = new Vector3(0f, 8f, -8f);
     }
 
     private void Update()

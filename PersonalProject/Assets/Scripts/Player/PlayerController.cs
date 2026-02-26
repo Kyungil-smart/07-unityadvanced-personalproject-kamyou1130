@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using UnityEditor.Searcher;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,15 +16,17 @@ public class PlayerController : MonoBehaviour, IDamagable
     // 플레이어 데이터 접근 필드(MVP 패턴)
     private PlayerData _playerData;
 
-    // 공격 모드에 따른 이동 속도 필드
+    // 플레이어 공격 모드에 따른 이동 속도 필드
     private float _moveSpeed;
     private float _rotateSpeed = 10f;
     
-    // 공격 가능 상태 접근 필드
+    // 플레이어 공격 가능 상태 접근 필드
     private bool _attackable;
     
-    // 대쉬 쿨타임 접근 필드
+    // 플레이어 대쉬 접근 필드
+    [SerializeField] private float _dashSpeed;
     [SerializeField] private float _dashCooltime;
+    private bool _dashPressed;
     
     // 플레이어 오브젝트 회전을 위한 필드
     private Ray _rotateRay;
@@ -51,6 +54,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _inputAction.PlayerAction.Zoom.performed += OnZoom;
         _inputAction.PlayerAction.Zoom.canceled += ZoomCancel;
         _inputAction.PlayerAction.Attack.performed += OnAttack;
+        _inputAction.PlayerAction.Dash.performed += OnDash;
     }
 
     private void OnDisable()
@@ -60,6 +64,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _inputAction.PlayerAction.Zoom.performed -= OnZoom;
         _inputAction.PlayerAction.Zoom.canceled -= ZoomCancel;
         _inputAction.PlayerAction.Attack.performed -= OnAttack;
+        _inputAction.PlayerAction.Dash.performed -= OnDash;
         
         _inputAction.PlayerAction.Disable();
     }
@@ -72,6 +77,13 @@ public class PlayerController : MonoBehaviour, IDamagable
         }
         
         NormalMovement();
+
+        _playerData.CurrentDashCooltime += Time.deltaTime;
+        if (_dashPressed)
+        {
+            _dashPressed = false;
+            Dash();
+        }
     }
 
     private void Init()
@@ -80,6 +92,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _inputAction = new NewInputAction();
         _playerData = new PlayerData();
         _camera = Camera.main;
+        _dashPressed = false;
     }
     
     private void NormalMovement()
@@ -125,6 +138,30 @@ public class PlayerController : MonoBehaviour, IDamagable
         _isLeftPressed = false;
     }
 
+    private void Dash()
+    {
+        if (_playerData.CurrentDashCooltime < _dashCooltime || _isRightPressed) return;
+        _playerData.CurrentDashCooltime = 0f;
+        StartCoroutine(DashCoroutine());
+    }
+
+    private IEnumerator DashCoroutine()
+    {
+        float timer = Time.time;
+        Vector3 moveDir = new Vector3(_moveInput.x, 0 , _moveInput.y);
+        
+        while (timer + 0.2f > Time.time)
+        {
+            _characterController.Move(moveDir * (_dashSpeed * Time.deltaTime));
+            yield return null;
+        }
+    }
+
+    public void TakeDamage(int value)
+    {
+        _playerData.PlayerHp -= value;
+    }
+
     private void OnMove(InputAction.CallbackContext ctx)
     {
         _moveInput = ctx.ReadValue<Vector2>();
@@ -150,9 +187,11 @@ public class PlayerController : MonoBehaviour, IDamagable
         StartCoroutine(AttackableCount());
     }
 
-    public void TakeDamage(int value)
+    private void OnDash(InputAction.CallbackContext ctx)
     {
-        _playerData.PlayerHp -= value;
+        if (ctx.performed)
+        {
+            _dashPressed = true;
+        }
     }
-
 }

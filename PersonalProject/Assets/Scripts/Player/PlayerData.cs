@@ -22,7 +22,7 @@ public class PlayerData
         }
     }
 
-    private float _currentDashCooltime = 0f;
+    private float _currentDashCooltime = 10f;
     public float CurrentDashCooltime
     {
         get => _currentDashCooltime;

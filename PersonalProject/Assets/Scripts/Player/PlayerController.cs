@@ -21,12 +21,11 @@ public class PlayerController : MonoBehaviour, IDamagable
     private float _rotateSpeed = 10f;
     
     // 플레이어 공격 가능 상태 접근 필드
-    private float _attackableTime = 0.5f;
+    private float _attackableTime;
     
     // 플레이어 대쉬 접근 필드
     [SerializeField] private float _dashSpeed;
     [SerializeField] private float _dashCooltime;
-    private bool _dashPressed;
     
     // 플레이어 오브젝트 회전을 위한 필드
     private Ray _rotateRay;
@@ -39,10 +38,13 @@ public class PlayerController : MonoBehaviour, IDamagable
     private Vector3 _moveDir;
     private bool _isRightPressed;
     private bool _isLeftPressed;
+    public bool _isParryingPressed;
+    private bool _dashPressed;
     
     // 플레이어 애니메이션 접근 필드
     private Animator _animator;
-
+    
+    // 콜라이더 상호작용을 위한 필드
     private MonsterController _monster;
     
     private void Awake()
@@ -60,6 +62,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _inputAction.PlayerAction.Zoom.canceled += ZoomCancel;
         _inputAction.PlayerAction.Attack.performed += OnAttack;
         _inputAction.PlayerAction.Dash.performed += OnDash;
+        _inputAction.PlayerAction.Parrying.performed += OnParrying;
     }
 
     private void OnDisable()
@@ -70,6 +73,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _inputAction.PlayerAction.Zoom.canceled -= ZoomCancel;
         _inputAction.PlayerAction.Attack.performed -= OnAttack;
         _inputAction.PlayerAction.Dash.performed -= OnDash;
+        _inputAction.PlayerAction.Parrying.performed -= OnParrying;
         
         _inputAction.PlayerAction.Disable();
     }
@@ -82,7 +86,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         }
 
         _attackableTime -= Time.deltaTime;
-        if (!_isLeftPressed)
+        if (_attackableTime <= 0f)
         {
             Movement();
         }
@@ -138,9 +142,9 @@ public class PlayerController : MonoBehaviour, IDamagable
         {
             _monster = other.gameObject.GetComponent<MonsterController>();
             StartCoroutine(AttackTiming());
-            
             Debug.Log("공격!");
-            _attackableTime = 0.15f;
+            
+            _attackableTime = 0.5f;
             _isLeftPressed = false;
         }
     }
@@ -148,13 +152,14 @@ public class PlayerController : MonoBehaviour, IDamagable
     // 마우스 좌클릭을 눌렀을때 0.05초 후에 false로 바꾸기 위한 코루틴
     private IEnumerator AttackableCount()
     {
+        if (!_isRightPressed) yield break;
         _animator.SetBool("Attack", true);
         int randIndex = UnityEngine.Random.Range(0, 3);
         _animator.SetInteger("AttackIndex", randIndex);
         
-        yield return new WaitForSeconds(0.05f);
-        _isLeftPressed = false;
+        yield return new WaitForSeconds(0.5f);
         _animator.SetBool("Attack", false);
+        _isLeftPressed = false;
     }
 
     private void Dash()
@@ -180,6 +185,17 @@ public class PlayerController : MonoBehaviour, IDamagable
     {
         yield return new WaitForSeconds(0.08f);
         _monster.TakeDamage(_playerData.PlayerAttackDamage);
+    }
+
+    private IEnumerator ParryingCoroutine()
+    {
+        if (!_isRightPressed) yield break;
+        _animator.SetBool("Parry", true);
+        
+        yield return new WaitForSeconds(0.2f);
+        
+        _animator.SetBool("Parry", false);
+        _isParryingPressed = false;
     }
 
     public void TakeDamage(int value)
@@ -213,19 +229,20 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private void OnAttack(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed)
-        {
-            _isLeftPressed = true;
-        }
+        _isLeftPressed = true;
 
         StartCoroutine(AttackableCount());
     }
 
     private void OnDash(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed)
-        {
-            _dashPressed = true;
-        }
+        _dashPressed = true;
+    }
+
+    private void OnParrying(InputAction.CallbackContext ctx)
+    {
+        _isParryingPressed = true;
+        
+        StartCoroutine(ParryingCoroutine());
     }
 }

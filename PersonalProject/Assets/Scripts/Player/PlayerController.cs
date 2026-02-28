@@ -203,6 +203,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     public void TakeDamage(int value)
     {
         _playerData.PlayerHp -= value;
+        Debug.Log($"{value} 데미지를 입음, 남은 체력 {_playerData.PlayerHp}");
     }
 
     private void OnMove(InputAction.CallbackContext ctx)

@@ -7,7 +7,13 @@ public class FirstMonsterSkill : MonsterSkill
     [SerializeField] private GameObject _parent;
     [SerializeField] private GameObject _warningPrefab;
     [SerializeField] private GameObject _skillPrefab;
-    [SerializeField] private float _skillRange;
+    
+    private SkillWarning _skillwarning;
+
+    private void Awake()
+    {
+        _skillwarning = _warningPrefab.GetComponent<SkillWarning>();
+    }
     
     public override void OnSkill()
     {
@@ -19,11 +25,14 @@ public class FirstMonsterSkill : MonsterSkill
         Vector3 playerPos = _player.transform.position;
         
         GameObject warning = Instantiate(_warningPrefab, playerPos, Quaternion.identity, _parent.transform);
+                
+        GameObject rock = Instantiate(
+            _skillPrefab, 
+            new Vector3(playerPos.x, playerPos.y + 11f, playerPos.z),
+            Quaternion.identity);
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(_skillwarning._skillTime);
         
         Destroy(warning);
-        
-        
     }
 }

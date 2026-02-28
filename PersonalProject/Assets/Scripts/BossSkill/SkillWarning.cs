@@ -8,7 +8,7 @@ public class SkillWarning : MonoBehaviour
 
     private float _timer;
 
-    private float _skillTime = 1f;
+    public float _skillTime = 2f;
     
     private void Start()
     {

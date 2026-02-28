@@ -152,12 +152,14 @@ public class PlayerController : MonoBehaviour, IDamagable
     // 마우스 좌클릭을 눌렀을때 0.05초 후에 false로 바꾸기 위한 코루틴
     private IEnumerator AttackableCount()
     {
-        if (!_isRightPressed) yield break;
-        _animator.SetBool("Attack", true);
-        int randIndex = UnityEngine.Random.Range(0, 3);
-        _animator.SetInteger("AttackIndex", randIndex);
+        if (_isRightPressed)
+        {
+            _animator.SetBool("Attack", true);
+            int randIndex = UnityEngine.Random.Range(0, 3);
+            _animator.SetInteger("AttackIndex", randIndex);
+        }
         
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.05f);
         _animator.SetBool("Attack", false);
         _isLeftPressed = false;
     }

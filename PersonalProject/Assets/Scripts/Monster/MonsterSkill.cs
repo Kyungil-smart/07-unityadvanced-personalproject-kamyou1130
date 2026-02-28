@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class MonsterSkill : MonoBehaviour
 {
-    public void OnSkill()
+    public virtual void OnSkill()
     {
         
     }

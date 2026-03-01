@@ -116,8 +116,8 @@ public class PlayerController : MonoBehaviour, IDamagable
         _characterController.Move(_moveDir * (_moveSpeed * Time.deltaTime));
         
         if (_moveDir == Vector3.zero || _isRightPressed) return;
-        Quaternion targetRatate = Quaternion.LookRotation(_moveDir);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRatate, Time.deltaTime * _rotateSpeed);
+        Quaternion targetRotate = Quaternion.LookRotation(_moveDir);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotate, Time.deltaTime * _rotateSpeed);
     }
 
     private void RotateByMouse()

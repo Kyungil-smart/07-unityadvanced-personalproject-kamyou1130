@@ -8,7 +8,7 @@ public class SkillWarning : MonoBehaviour
 
     private float _timer;
 
-    public float _skillTime = 2f;
+    public float _circleSkillTime = 2f;
     
     private void Start()
     {
@@ -20,7 +20,7 @@ public class SkillWarning : MonoBehaviour
     {
         _timer += Time.deltaTime;
 
-        float ratio = (_timer / _skillTime);   
+        float ratio = (_timer / _circleSkillTime);   
 
         _fillImage.transform.localScale = new Vector3(ratio, ratio, 1f);
     }

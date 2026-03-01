@@ -18,7 +18,13 @@ public class MonsterAI : MonoBehaviour
     {
         if (_canMove)
         {
+            _navMeshAgent.isStopped = false;
             FollowPlayer();   
+        }
+        else
+        {
+            _navMeshAgent.isStopped = true;
+            _navMeshAgent.ResetPath();
         }
     }
 

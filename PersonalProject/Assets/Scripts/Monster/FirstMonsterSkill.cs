@@ -26,12 +26,12 @@ public class FirstMonsterSkill : MonsterSkill
         
         GameObject warning = Instantiate(_warningPrefab, playerPos, Quaternion.identity, _parent.transform);
                 
-        GameObject rock = Instantiate(
+        Instantiate(
             _skillPrefab, 
             new Vector3(playerPos.x, playerPos.y + 11f, playerPos.z),
             Quaternion.identity);
 
-        yield return new WaitForSeconds(_skillwarning._skillTime);
+        yield return new WaitForSeconds(_skillwarning._circleSkillTime);
         
         Destroy(warning);
     }

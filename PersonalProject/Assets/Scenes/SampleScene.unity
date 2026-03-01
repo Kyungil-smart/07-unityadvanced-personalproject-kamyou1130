@@ -416,6 +416,59 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFix
   _player: {fileID: 911811859}
+--- !u!1 &343665224
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 343665225}
+  - component: {fileID: 343665226}
+  m_Layer: 0
+  m_Name: SecondSkill
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &343665225
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 343665224}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1731012674}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &343665226
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 343665224}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 4.5, y: 4, z: 17}
+  m_Center: {x: 0, y: 2, z: 10}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -679,8 +732,9 @@ GameObject:
   - component: {fileID: 1731012672}
   - component: {fileID: 1731012677}
   - component: {fileID: 1731012678}
+  - component: {fileID: 1731012679}
   m_Layer: 0
-  m_Name: FirstMonster
+  m_Name: Monster1
   m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -702,9 +756,10 @@ MonoBehaviour:
   _player: {fileID: 911811859}
   _monsterSkill:
   - {fileID: 1731012678}
+  - {fileID: 1731012679}
   _chaseRange: 15
   _attackRange: 10
-  _attackTime: 3
+  _attackTime: 4
 --- !u!136 &1731012673
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -724,10 +779,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
+  m_Radius: 1.1
+  m_Height: 4
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!4 &1731012674
 Transform:
   m_ObjectHideFlags: 0
@@ -742,6 +797,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1394214815}
+  - {fileID: 343665225}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!54 &1731012675
@@ -824,6 +880,22 @@ MonoBehaviour:
   _parent: {fileID: 3264053919120137017}
   _warningPrefab: {fileID: 8682812071092065470, guid: 10d0d3c0f193c624b893b66310f90247, type: 3}
   _skillPrefab: {fileID: 3634639479654641926, guid: cb97ae6c063fdb545b20dee1d92a9c84, type: 3}
+--- !u!114 &1731012679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1731012671}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16e2b7c3bfb385044a493e04e12fd050, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecondMonsterSkill
+  _player: {fileID: 911811859}
+  _parent: {fileID: 3264053919120137017}
+  _warningPrefab: {fileID: 1194659372892017758, guid: 00bb632c47179464dacc8f205c6ace16, type: 3}
+  _skillPrefab: {fileID: 343665224}
 --- !u!1 &3264053919120137017
 GameObject:
   m_ObjectHideFlags: 0

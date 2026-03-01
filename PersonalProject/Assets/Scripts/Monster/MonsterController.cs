@@ -28,6 +28,8 @@ public class MonsterController : MonoBehaviour, IDamagable
     private bool _isAttacking;
     public float _attackTime;
 
+    private float _canMoveTime;
+
     private void Awake()
     {
         Init();
@@ -89,9 +91,16 @@ public class MonsterController : MonoBehaviour, IDamagable
     private void Attack()
     {
         if (!_isAttacking)
-        {        
+        {
             StartCoroutine(Attacking());
         }
+
+        _canMoveTime += Time.deltaTime;
+        if (_canMoveTime > 2f)
+        {
+            RotateToPlayer();
+        }
+        
 
         if (_monsterData.MonsterHp <= 0)
         {
@@ -107,6 +116,12 @@ public class MonsterController : MonoBehaviour, IDamagable
         }
     }
 
+    private void RotateToPlayer()
+    {
+        Quaternion targetRotation = Quaternion.LookRotation(_player.position - transform.position);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 3f);
+    }
+
     private bool IsPlayerInRange(float range)
     {
         return Vector3.Distance(transform.position, _player.position) <= range;
@@ -120,19 +135,12 @@ public class MonsterController : MonoBehaviour, IDamagable
             Destroy(gameObject);
         }
     }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = new Color(0,0,1, 0.3f);
-        Gizmos.DrawSphere(transform.position, _chaseRange);
-        
-        Gizmos.color = new Color(1,0,0, 0.3f);
-        Gizmos.DrawSphere(transform.position, _attackRange);
-    }
-
+    
     private IEnumerator Attacking()
     {
         _isAttacking = true;
+        
+        _canMoveTime = 0f;
         
         int randIndex = UnityEngine.Random.Range(0, _monsterSkill.Count);
         _monsterSkill[randIndex].OnSkill();
@@ -140,5 +148,14 @@ public class MonsterController : MonoBehaviour, IDamagable
         yield return new WaitForSeconds(_attackTime);
         
         _isAttacking = false;
+    }
+    
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(0,0,1, 0.3f);
+        Gizmos.DrawSphere(transform.position, _chaseRange);
+        
+        Gizmos.color = new Color(1,0,0, 0.3f);
+        Gizmos.DrawSphere(transform.position, _attackRange);
     }
 }

@@ -24,7 +24,10 @@ public class FirstMonsterSkill : MonsterSkill
     {
         Vector3 playerPos = _player.transform.position;
         
-        GameObject warning = Instantiate(_warningPrefab, playerPos, Quaternion.identity, _parent.transform);
+        GameObject warning = Instantiate(_warningPrefab,
+            new Vector3(playerPos.x, 0f, playerPos.z), 
+            Quaternion.identity, 
+            _parent.transform);
                 
         Instantiate(
             _skillPrefab, 

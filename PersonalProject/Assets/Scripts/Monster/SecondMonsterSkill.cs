@@ -8,12 +8,11 @@ public class SecondMonsterSkill : MonsterSkill
     [SerializeField] private GameObject _warningPrefab;
     [SerializeField] private GameObject _skillPrefab;
     
-    private BoxCollider _collider;
+    private BoxWarning _boxWarning;
 
     private void Awake()
     {
-        _collider = _skillPrefab.GetComponent<BoxCollider>();
-        _collider.enabled = false;
+        _boxWarning = _warningPrefab.GetComponent<BoxWarning>();
     }
 
     public override void OnSkill()
@@ -23,22 +22,20 @@ public class SecondMonsterSkill : MonsterSkill
 
     private IEnumerator RockPunch()
     {
-        Quaternion targetRotation = Quaternion.LookRotation(_player.position - transform.position);
-        
         GameObject boxWarning = Instantiate(
             _warningPrefab,
-            new Vector3(0f, 0f, transform.position.z).normalized * 5f,
-            targetRotation,
+            transform.position + transform.forward * 10f,
+            transform.rotation,
             _parent.transform
             );
         
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(_boxWarning._boxSkillTime);
         
         Destroy(boxWarning);
-        _collider.enabled = true;
-        
-        yield return new WaitForSeconds(0.1f);
-        
-        _collider.enabled = false;
+
+        Instantiate(_skillPrefab,
+            transform.position + transform.forward * 1f,
+            transform.rotation
+        );
     }
 }

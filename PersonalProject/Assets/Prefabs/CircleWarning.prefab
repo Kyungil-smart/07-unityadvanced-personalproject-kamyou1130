@@ -176,7 +176,7 @@ RectTransform:
   m_GameObject: {fileID: 8682812071092065470}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6561019218295310491}
@@ -201,4 +201,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkillWarning
   _fillImage: {fileID: 8865054260016690186}
-  _circleSkillTime: 1.4
+  _circleSkillTime: 1.5

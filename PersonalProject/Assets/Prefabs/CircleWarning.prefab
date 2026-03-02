@@ -201,4 +201,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkillWarning
   _fillImage: {fileID: 8865054260016690186}
-  _circleSkillTime: 1.5
+  _circleSkillTime: 1.4

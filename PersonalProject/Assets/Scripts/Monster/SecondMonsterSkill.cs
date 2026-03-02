@@ -34,7 +34,7 @@ public class SecondMonsterSkill : MonsterSkill
         Destroy(boxWarning);
 
         Instantiate(_skillPrefab,
-            transform.position + transform.forward * 1f,
+            transform.position + transform.forward * 3f,
             transform.rotation
         );
     }

@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEditor.Searcher;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -20,8 +21,11 @@ public class PlayerController : MonoBehaviour, IDamagable
     private float _moveSpeed;
     private float _rotateSpeed = 10f;
     
-    // 플레이어 공격 가능 상태 접근 필드
+    // 플레이어 공격 접근 필드
     private float _attackableTime;
+    [SerializeField] private Transform _attackPos;
+    [SerializeField] private float _attackRange;
+    [SerializeField] private LayerMask _attackLayer;
     
     // 플레이어 대쉬 접근 필드
     [SerializeField] private float _dashSpeed;
@@ -46,6 +50,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     // 콜라이더 상호작용을 위한 필드
     private MonsterController _monster;
+    private SphereCollider _sphereCollider;
     
     private void Awake()
     {
@@ -83,6 +88,10 @@ public class PlayerController : MonoBehaviour, IDamagable
         if (_isRightPressed)
         {
             RotateByMouse();
+            if (_isLeftPressed)
+            {
+                TryAttack();
+            }
         }
 
         _attackableTime -= Time.deltaTime;
@@ -102,6 +111,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     private void Init()
     {
         if (_characterController == null) _characterController = GetComponent<CharacterController>();
+        if (_sphereCollider == null) _sphereCollider = GetComponent<SphereCollider>();
         _inputAction = new NewInputAction();
         _playerData = new PlayerData();
         _camera = Camera.main;
@@ -135,6 +145,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         }
     }
 
+    /*
     private void OnTriggerStay(Collider other)
     {
         if (_attackableTime > 0f) return;
@@ -147,6 +158,24 @@ public class PlayerController : MonoBehaviour, IDamagable
             _attackableTime = 0.5f;
             _isLeftPressed = false;
         }
+    }
+    */
+    
+    private void TryAttack()
+    {
+        if (_attackableTime > 0f) return;
+        
+        Collider[] colliders = Physics.OverlapSphere(_attackPos.position, _attackRange, _attackLayer);
+
+        foreach (Collider hit in colliders)
+        {
+            _monster = hit.GetComponent<MonsterController>();
+            StartCoroutine(AttackTiming());
+            
+            Debug.Log("공격!");
+        }
+        _attackableTime = 0.5f;
+        _isLeftPressed = false;
     }
 
     // 마우스 좌클릭을 눌렀을때 0.05초 후에 false로 바꾸기 위한 코루틴
@@ -247,5 +276,11 @@ public class PlayerController : MonoBehaviour, IDamagable
         _isParryingPressed = true;
         
         StartCoroutine(ParryingCoroutine());
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(1f, 1f, 0f, 0.5f);
+        Gizmos.DrawSphere(_attackPos.position, _attackRange);
     }
 }

@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2191141830130386562}
   - component: {fileID: 1895316841399008572}
   - component: {fileID: 4696627952694679372}
-  - component: {fileID: 5483058028267501146}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -46,7 +45,7 @@ CharacterController:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -76,33 +75,17 @@ MonoBehaviour:
   _characterController: {fileID: 1895316841399008572}
   _zoomMoveSpeed: 2
   _normalMoveSpeed: 5
+  _attackPos: {fileID: 468427138851180693}
+  _attackRange: 0.7
+  _attackLayer:
+    serializedVersion: 2
+    m_Bits: 256
   _dashSpeed: 20
   _dashCooltime: 10
   _layerMask:
     serializedVersion: 2
     m_Bits: 64
   _isParryingPressed: 0
---- !u!135 &5483058028267501146
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 389367580224822995}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.7
-  m_Center: {x: 0, y: 1, z: 1.3}
 --- !u!1 &2080682064406832083
 GameObject:
   m_ObjectHideFlags: 0
@@ -113,7 +96,7 @@ GameObject:
   m_Component:
   - component: {fileID: 468427138851180693}
   m_Layer: 0
-  m_Name: AttackCollider
+  m_Name: AttackPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -128,7 +111,7 @@ Transform:
   m_GameObject: {fileID: 2080682064406832083}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 1.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

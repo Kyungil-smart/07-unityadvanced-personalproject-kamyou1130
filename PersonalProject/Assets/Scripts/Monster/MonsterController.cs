@@ -157,12 +157,12 @@ public class MonsterController : MonoBehaviour, IDamagable
         
         if (_flyObject.transform.position.y > 0f &&  _knowkDownTime < 5f)
         {
-            _flyObject.transform.position += Vector3.down * (3f * Time.deltaTime);
+            _flyObject.transform.position += Vector3.down * (5f * Time.deltaTime);
         }
 
-        if (_flyObject.transform.position.y < _originalPos.y && _knowkDownTime >= 5f)
+        if (_flyObject.transform.position.y < _originalPos.y && _knowkDownTime >= 4f)
         {
-            _flyObject.transform.position += Vector3.up * (3f * Time.deltaTime);
+            _flyObject.transform.position += Vector3.up * (5f * Time.deltaTime);
             if (_flyObject.transform.position.y > _originalPos.y - 0.1f)
             {
                 _standing = true;   

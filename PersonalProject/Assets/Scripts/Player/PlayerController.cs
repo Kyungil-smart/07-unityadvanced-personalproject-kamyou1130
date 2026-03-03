@@ -179,7 +179,7 @@ public class PlayerController : MonoBehaviour, IDamagable
 
         foreach (Collider hit in colliders)
         {
-            _monster = hit.GetComponent<MonsterController>();
+            _monster = hit.GetComponentInParent<MonsterController>();
             StartCoroutine(AttackTiming());
             
             Debug.Log("공격!");

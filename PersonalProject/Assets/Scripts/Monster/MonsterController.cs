@@ -8,6 +8,7 @@ public enum State
     Idle,
     Chase,
     Attack,
+    Down,
     Die
 }
 public class MonsterController : MonoBehaviour, IDamagable
@@ -21,6 +22,14 @@ public class MonsterController : MonoBehaviour, IDamagable
     
     // FSM 유한 상태 머신 접근 필드
     private State _currentState;
+    public State CurrentState
+    {
+        get => _currentState;
+        set
+        {
+            _currentState = value;
+        }
+    }
     [SerializeField] private float _chaseRange;
     [SerializeField] private float _attackRange;
     
@@ -31,10 +40,18 @@ public class MonsterController : MonoBehaviour, IDamagable
     // 자연스럽게 플레이어 오브젝트를 바라보도록 회전을 위한 시간 체크 필드
     private float _canMoveTime;
     
-    // 애니메이션
+    // 애니메이션 접근 필드
     private Animator _animator;
     
+    // Die 상태 시 콜라이더 충돌을 방지하기 위한 필드
     private CapsuleCollider _capsuleCollider;
+
+    private bool _standing;
+    private int cnt;
+    private float _knowkDownTime;
+    private Vector3 _originalPos;
+    
+    [SerializeField] private GameObject _flyObject;
 
     private void Awake()
     {
@@ -54,6 +71,9 @@ public class MonsterController : MonoBehaviour, IDamagable
             case State.Attack:
                 Attack();
                 break;
+            case State.Down:
+                Down();
+                break;
             case State.Die:
                 Die();
                 break;
@@ -67,6 +87,7 @@ public class MonsterController : MonoBehaviour, IDamagable
         _monsterData = new MonsterData();
         _currentState = State.Idle;
         _capsuleCollider = GetComponent<CapsuleCollider>();
+        _originalPos = _flyObject.transform.position;
     }
 
     private void Idle()
@@ -130,6 +151,49 @@ public class MonsterController : MonoBehaviour, IDamagable
         }
     }
 
+    private void Down()
+    {
+        _knowkDownTime += Time.deltaTime;
+        
+        if (_flyObject.transform.position.y > 0f &&  _knowkDownTime < 5f)
+        {
+            _flyObject.transform.position += Vector3.down * (3f * Time.deltaTime);
+        }
+
+        if (_flyObject.transform.position.y < _originalPos.y && _knowkDownTime >= 5f)
+        {
+            _flyObject.transform.position += Vector3.up * (3f * Time.deltaTime);
+            if (_flyObject.transform.position.y > _originalPos.y - 0.1f)
+            {
+                _standing = true;   
+            }
+        }
+        
+        if (_monsterData.MonsterHp <= 0)
+        {
+            _currentState = State.Die;
+        }
+        
+        if (_standing)
+        {
+            if (IsPlayerInRange(_attackRange))
+            {
+                _currentState = State.Attack;
+                _knowkDownTime = 0f;
+            }
+            else if (!IsPlayerInRange(_attackRange))
+            {
+                _currentState = State.Chase;
+                _knowkDownTime = 0f;
+            }
+            else if (!IsPlayerInRange(_chaseRange))
+            {
+                _currentState = State.Idle;
+                _knowkDownTime = 0f;
+            }
+        }
+    }
+
     private void Die()
     {
         _animator.SetTrigger("Dead");
@@ -150,6 +214,12 @@ public class MonsterController : MonoBehaviour, IDamagable
     public void TakeDamage(int value)
     {
         _monsterData.MonsterHp -= value;
+    }
+
+    private IEnumerator KnockDown()
+    {
+        yield return new WaitForSeconds(5f);
+        
     }
     
     private IEnumerator Attacking()

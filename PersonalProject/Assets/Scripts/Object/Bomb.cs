@@ -24,7 +24,9 @@ public class Bomb : MonoBehaviour
         
         if (other.gameObject.CompareTag("Monster"))
         {
-            MonsterController monsterController = other.gameObject.GetComponent<MonsterController>();
+            MonsterController monsterController = other.gameObject.GetComponentInParent<MonsterController>();
+
+            monsterController.CurrentState = State.Down;
             
             Destroy(gameObject);
         }

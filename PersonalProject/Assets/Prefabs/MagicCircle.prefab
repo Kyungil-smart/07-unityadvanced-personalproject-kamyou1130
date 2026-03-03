@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Magic
   _attackDamage: 10
-  _tornadoPrefab: {fileID: 7938471155301214846, guid: 65d20ce6b53c0e848810bfd37e9b4a01, type: 3}
+  _tornadoPrefab: {fileID: 8868197775371079815, guid: 8246349547e9b7445934eb046a36a0e6, type: 3}
 --- !u!135 &2945686507692023070
 SphereCollider:
   m_ObjectHideFlags: 0

@@ -87,7 +87,7 @@ public class MonsterController : MonoBehaviour, IDamagable
         _monsterData = new MonsterData();
         _currentState = State.Idle;
         _capsuleCollider = GetComponent<CapsuleCollider>();
-        _originalPos = _flyObject.transform.position;
+        if (_flyObject != null) _originalPos = _flyObject.transform.position;
     }
 
     private void Idle()

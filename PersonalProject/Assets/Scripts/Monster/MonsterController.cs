@@ -154,6 +154,8 @@ public class MonsterController : MonoBehaviour, IDamagable
     
     private IEnumerator Attacking()
     {
+        if (_monsterSkill.Count <= 0) yield break;
+        
         _isAttacking = true;
         
         _animator.SetTrigger("Attack");

@@ -75,6 +75,7 @@ MonoBehaviour:
   _characterController: {fileID: 1895316841399008572}
   _zoomMoveSpeed: 2
   _normalMoveSpeed: 5
+  _moveSpeed: 0
   _attackPos: {fileID: 468427138851180693}
   _attackRange: 0.7
   _attackLayer:
@@ -86,6 +87,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   _isParryingPressed: 0
+  _bombPrefab: {fileID: 4589462692471021725, guid: ce484d7f789568d419e578dd7967053e, type: 3}
+  _bombCoolTime: 2
 --- !u!1 &2080682064406832083
 GameObject:
   m_ObjectHideFlags: 0

@@ -593,16 +593,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &911811857 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 389367580224822995, guid: fab9aa0c467dabf448d3c2b42041b253, type: 3}
-  m_PrefabInstance: {fileID: 7463992282831219263}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &911811859 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2191141830130386562, guid: fab9aa0c467dabf448d3c2b42041b253, type: 3}
   m_PrefabInstance: {fileID: 7463992282831219263}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1993707137 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3491475661114811813, guid: df3685bca0f2f9141983702bee932d30, type: 3}
+  m_PrefabInstance: {fileID: 3040875331054315441}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca4b1fe0e288477409bfca9e371b46c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FourthMonsterSkill
 --- !u!1001 &909793490202873744
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -619,10 +625,6 @@ PrefabInstance:
       propertyPath: _parent
       value: 
       objectReference: {fileID: 3264053919120137017}
-    - target: {fileID: 2674678603480668139, guid: b48c6a35e566f0b4b91124ee1dc1ae3c, type: 3}
-      propertyPath: _player
-      value: 
-      objectReference: {fileID: 911811859}
     - target: {fileID: 4452124629935588091, guid: b48c6a35e566f0b4b91124ee1dc1ae3c, type: 3}
       propertyPath: _player
       value: 
@@ -634,7 +636,7 @@ PrefabInstance:
     - target: {fileID: 6807725286561228026, guid: b48c6a35e566f0b4b91124ee1dc1ae3c, type: 3}
       propertyPath: _player
       value: 
-      objectReference: {fileID: 911811857}
+      objectReference: {fileID: 911811859}
     - target: {fileID: 8673892166432651180, guid: b48c6a35e566f0b4b91124ee1dc1ae3c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -679,10 +681,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Monster1
       objectReference: {fileID: 0}
-    - target: {fileID: 8699562382211441381, guid: b48c6a35e566f0b4b91124ee1dc1ae3c, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -699,10 +697,6 @@ PrefabInstance:
     - target: {fileID: 1923633966975765177, guid: df3685bca0f2f9141983702bee932d30, type: 3}
       propertyPath: m_Name
       value: Monster2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1923633966975765177, guid: df3685bca0f2f9141983702bee932d30, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2239643662183070839, guid: df3685bca0f2f9141983702bee932d30, type: 3}
       propertyPath: m_LocalPosition.x
@@ -744,10 +738,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3491475661114811813, guid: df3685bca0f2f9141983702bee932d30, type: 3}
+      propertyPath: _count
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3491475661114811813, guid: df3685bca0f2f9141983702bee932d30, type: 3}
+      propertyPath: _parent
+      value: 
+      objectReference: {fileID: 3264053919120137017}
+    - target: {fileID: 3491475661114811813, guid: df3685bca0f2f9141983702bee932d30, type: 3}
+      propertyPath: _skillPrefab
+      value: 
+      objectReference: {fileID: 9073109055188392861, guid: 21fcf79ee1e165b4199eae8841db6a3c, type: 3}
+    - target: {fileID: 3491475661114811813, guid: df3685bca0f2f9141983702bee932d30, type: 3}
+      propertyPath: _warningPrefab
+      value: 
+      objectReference: {fileID: 3450248583768221123, guid: e87f412fe976cb84b8e6dd9dbc7210e0, type: 3}
     - target: {fileID: 4341071616216785590, guid: df3685bca0f2f9141983702bee932d30, type: 3}
       propertyPath: _player
       value: 
       objectReference: {fileID: 911811859}
+    - target: {fileID: 4341071616216785590, guid: df3685bca0f2f9141983702bee932d30, type: 3}
+      propertyPath: _monsterSkill.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4341071616216785590, guid: df3685bca0f2f9141983702bee932d30, type: 3}
+      propertyPath: '_monsterSkill.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1993707137}
     - target: {fileID: 7913577177022235611, guid: df3685bca0f2f9141983702bee932d30, type: 3}
       propertyPath: _playerTf
       value: 
@@ -917,14 +935,6 @@ PrefabInstance:
     - target: {fileID: 2191141830130386562, guid: fab9aa0c467dabf448d3c2b42041b253, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4696627952694679372, guid: fab9aa0c467dabf448d3c2b42041b253, type: 3}
-      propertyPath: _bombPrefab
-      value: 
-      objectReference: {fileID: 4589462692471021725, guid: ce484d7f789568d419e578dd7967053e, type: 3}
-    - target: {fileID: 4696627952694679372, guid: fab9aa0c467dabf448d3c2b42041b253, type: 3}
-      propertyPath: _bombCoolTime
-      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

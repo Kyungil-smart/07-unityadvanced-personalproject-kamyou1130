@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class ThirdMonsterSkill : MonsterSkill
 {
-    [SerializeField] private Transform _player;
-    [SerializeField] private GameObject _parent;
+    [SerializeField] protected Transform _player;
+    [SerializeField] protected GameObject _parent;
     [SerializeField] private GameObject _warningPrefab;
     [SerializeField] private GameObject _skillPrefab;
 

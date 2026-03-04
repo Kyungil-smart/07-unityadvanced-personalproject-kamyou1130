@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4341071616216785590}
   - component: {fileID: 7913577177022235611}
   - component: {fileID: 8347284047078226435}
+  - component: {fileID: 3491475661114811813}
   m_Layer: 8
   m_Name: Monster2
   m_TagString: Monster
@@ -103,6 +104,7 @@ MonoBehaviour:
   _player: {fileID: 0}
   _monsterSkill:
   - {fileID: 8347284047078226435}
+  - {fileID: 3491475661114811813}
   _chaseRange: 15
   _attackRange: 10
   _attackTime: 3
@@ -138,6 +140,22 @@ MonoBehaviour:
   _parent: {fileID: 0}
   _warningPrefab: {fileID: 6146517916714318832, guid: 4bbb4b3bc9c179f46947258400d6ee3f, type: 3}
   _skillPrefab: {fileID: 8818051361084627004, guid: 2db7de5c8e5bb2e45a7488f74f528e6b, type: 3}
+--- !u!114 &3491475661114811813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1923633966975765177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca4b1fe0e288477409bfca9e371b46c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FourthMonsterSkill
+  _parent: {fileID: 0}
+  _warningPrefab: {fileID: 1194659372892017758, guid: 00bb632c47179464dacc8f205c6ace16, type: 3}
+  _skillPrefab: {fileID: 0}
+  _count: 5
 --- !u!1 &3283673065241288972
 GameObject:
   m_ObjectHideFlags: 0

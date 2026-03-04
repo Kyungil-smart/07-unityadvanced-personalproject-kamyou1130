@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class FirstMonsterSkill : MonsterSkill
 {
-    [SerializeField] private GameObject _player;
-    [SerializeField] private GameObject _parent;
+    [SerializeField] protected Transform _player;
+    [SerializeField] protected GameObject _parent;
     [SerializeField] private GameObject _warningPrefab;
     [SerializeField] private GameObject _skillPrefab;
     
@@ -22,7 +22,7 @@ public class FirstMonsterSkill : MonsterSkill
 
     private IEnumerator RockDrop()
     {
-        Vector3 playerPos = _player.transform.position;
+        Vector3 playerPos = _player.position;
         
         GameObject warning = Instantiate(_warningPrefab,
             new Vector3(playerPos.x, 0f, playerPos.z), 

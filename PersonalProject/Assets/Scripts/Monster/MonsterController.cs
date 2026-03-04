@@ -153,6 +153,8 @@ public class MonsterController : MonoBehaviour, IDamagable
 
     private void Down()
     {
+        Debug.Log("넉다운");
+        
         _knowkDownTime += Time.deltaTime;
         
         if (_flyObject.transform.position.y > 0f &&  _knowkDownTime < 5f)
@@ -180,16 +182,19 @@ public class MonsterController : MonoBehaviour, IDamagable
             {
                 _currentState = State.Attack;
                 _knowkDownTime = 0f;
+                _standing = false;
             }
             else if (!IsPlayerInRange(_attackRange))
             {
                 _currentState = State.Chase;
                 _knowkDownTime = 0f;
+                _standing = false;
             }
             else if (!IsPlayerInRange(_chaseRange))
             {
                 _currentState = State.Idle;
                 _knowkDownTime = 0f;
+                _standing = false;
             }
         }
     }
@@ -229,9 +234,9 @@ public class MonsterController : MonoBehaviour, IDamagable
         _isAttacking = true;
         
         _animator.SetTrigger("Attack");
-        int RandIndex = UnityEngine.Random.Range(0, _monsterSkill.Count);
-        _animator.SetInteger("AttackIndex",RandIndex);
-        _monsterSkill[RandIndex].OnSkill();
+        int randIndex = UnityEngine.Random.Range(0, _monsterSkill.Count);
+        _animator.SetInteger("AttackIndex",randIndex);
+        _monsterSkill[randIndex].OnSkill();
         _canMoveTime = 0f;
         
         yield return new WaitForSeconds(_attackTime);

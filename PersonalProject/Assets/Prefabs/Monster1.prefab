@@ -22,7 +22,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8673892166432651180
 Transform:
   m_ObjectHideFlags: 0
@@ -131,6 +131,7 @@ MonoBehaviour:
   _chaseRange: 15
   _attackRange: 10
   _attackTime: 3
+  _flyObject: {fileID: 0}
 --- !u!114 &1746996635784434599
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,7 +175,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16e2b7c3bfb385044a493e04e12fd050, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SecondMonsterSkill
-  _player: {fileID: 0}
   _parent: {fileID: 0}
   _warningPrefab: {fileID: 1194659372892017758, guid: 00bb632c47179464dacc8f205c6ace16, type: 3}
   _skillPrefab: {fileID: 1697206124154193419, guid: fc9a36456c77f5c488b11e0c46dd6d80, type: 3}

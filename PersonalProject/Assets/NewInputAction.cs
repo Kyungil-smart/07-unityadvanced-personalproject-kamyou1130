@@ -136,6 +136,15 @@ public partial class @NewInputAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Bomb"",
+                    ""type"": ""Button"",
+                    ""id"": ""6b398efa-787f-4e5f-9559-3b61359be8a4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -237,6 +246,17 @@ public partial class @NewInputAction: IInputActionCollection2, IDisposable
                     ""action"": ""Parrying"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b3a73ed0-267d-421e-88ae-9b2ecc43a743"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Bomb"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -267,6 +287,7 @@ public partial class @NewInputAction: IInputActionCollection2, IDisposable
         m_PlayerAction_Zoom = m_PlayerAction.FindAction("Zoom", throwIfNotFound: true);
         m_PlayerAction_Dash = m_PlayerAction.FindAction("Dash", throwIfNotFound: true);
         m_PlayerAction_Parrying = m_PlayerAction.FindAction("Parrying", throwIfNotFound: true);
+        m_PlayerAction_Bomb = m_PlayerAction.FindAction("Bomb", throwIfNotFound: true);
     }
 
     ~@NewInputAction()
@@ -352,6 +373,7 @@ public partial class @NewInputAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerAction_Zoom;
     private readonly InputAction m_PlayerAction_Dash;
     private readonly InputAction m_PlayerAction_Parrying;
+    private readonly InputAction m_PlayerAction_Bomb;
     /// <summary>
     /// Provides access to input actions defined in input action map "PlayerAction".
     /// </summary>
@@ -383,6 +405,10 @@ public partial class @NewInputAction: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "PlayerAction/Parrying".
         /// </summary>
         public InputAction @Parrying => m_Wrapper.m_PlayerAction_Parrying;
+        /// <summary>
+        /// Provides access to the underlying input action "PlayerAction/Bomb".
+        /// </summary>
+        public InputAction @Bomb => m_Wrapper.m_PlayerAction_Bomb;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -424,6 +450,9 @@ public partial class @NewInputAction: IInputActionCollection2, IDisposable
             @Parrying.started += instance.OnParrying;
             @Parrying.performed += instance.OnParrying;
             @Parrying.canceled += instance.OnParrying;
+            @Bomb.started += instance.OnBomb;
+            @Bomb.performed += instance.OnBomb;
+            @Bomb.canceled += instance.OnBomb;
         }
 
         /// <summary>
@@ -450,6 +479,9 @@ public partial class @NewInputAction: IInputActionCollection2, IDisposable
             @Parrying.started -= instance.OnParrying;
             @Parrying.performed -= instance.OnParrying;
             @Parrying.canceled -= instance.OnParrying;
+            @Bomb.started -= instance.OnBomb;
+            @Bomb.performed -= instance.OnBomb;
+            @Bomb.canceled -= instance.OnBomb;
         }
 
         /// <summary>
@@ -538,5 +570,12 @@ public partial class @NewInputAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnParrying(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Bomb" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnBomb(InputAction.CallbackContext context);
     }
 }

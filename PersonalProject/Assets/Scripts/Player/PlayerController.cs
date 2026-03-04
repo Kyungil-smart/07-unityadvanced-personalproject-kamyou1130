@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEditor.Searcher;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,11 +18,14 @@ public class PlayerController : MonoBehaviour, IDamagable
     private PlayerData _playerData;
 
     // 플레이어 공격 모드에 따른 이동 속도 필드
-    private float _moveSpeed;
+    public float _moveSpeed;
     private float _rotateSpeed = 10f;
     
-    // 플레이어 공격 가능 상태 접근 필드
+    // 플레이어 공격 접근 필드
     private float _attackableTime;
+    [SerializeField] private Transform _attackPos;
+    [SerializeField] private float _attackRange;
+    [SerializeField] private LayerMask _attackLayer;
     
     // 플레이어 대쉬 접근 필드
     [SerializeField] private float _dashSpeed;
@@ -46,6 +50,11 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     // 콜라이더 상호작용을 위한 필드
     private MonsterController _monster;
+    private SphereCollider _sphereCollider;
+    
+    // 폭탄 설치 코루틴 접근 필드
+    [SerializeField] private GameObject _bombPrefab;
+    [SerializeField] private float _bombCoolTime;
     
     private void Awake()
     {
@@ -63,6 +72,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _inputAction.PlayerAction.Attack.performed += OnAttack;
         _inputAction.PlayerAction.Dash.performed += OnDash;
         _inputAction.PlayerAction.Parrying.performed += OnParrying;
+        _inputAction.PlayerAction.Bomb.performed += OnBomb;
     }
 
     private void OnDisable()
@@ -74,15 +84,22 @@ public class PlayerController : MonoBehaviour, IDamagable
         _inputAction.PlayerAction.Attack.performed -= OnAttack;
         _inputAction.PlayerAction.Dash.performed -= OnDash;
         _inputAction.PlayerAction.Parrying.performed -= OnParrying;
+        _inputAction.PlayerAction.Bomb.performed -= OnBomb;
         
         _inputAction.PlayerAction.Disable();
     }
 
     private void Update()
     {
+        _playerData.CurrentBombCooltime += Time.deltaTime;
+        
         if (_isRightPressed)
         {
             RotateByMouse();
+            if (_isLeftPressed)
+            {
+                TryAttack();
+            }
         }
 
         _attackableTime -= Time.deltaTime;
@@ -97,16 +114,19 @@ public class PlayerController : MonoBehaviour, IDamagable
             _dashPressed = false;
             Dash();
         }
+
     }
 
     private void Init()
     {
         if (_characterController == null) _characterController = GetComponent<CharacterController>();
+        if (_sphereCollider == null) _sphereCollider = GetComponent<SphereCollider>();
         _inputAction = new NewInputAction();
         _playerData = new PlayerData();
         _camera = Camera.main;
         _dashPressed = false;
         _animator = GetComponentInChildren<Animator>();
+        _playerData.CurrentBombCooltime = _bombCoolTime;
     }
     
     private void Movement()
@@ -116,8 +136,8 @@ public class PlayerController : MonoBehaviour, IDamagable
         _characterController.Move(_moveDir * (_moveSpeed * Time.deltaTime));
         
         if (_moveDir == Vector3.zero || _isRightPressed) return;
-        Quaternion targetRatate = Quaternion.LookRotation(_moveDir);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRatate, Time.deltaTime * _rotateSpeed);
+        Quaternion targetRotate = Quaternion.LookRotation(_moveDir);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotate, Time.deltaTime * _rotateSpeed);
     }
 
     private void RotateByMouse()
@@ -135,6 +155,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         }
     }
 
+    /*
     private void OnTriggerStay(Collider other)
     {
         if (_attackableTime > 0f) return;
@@ -148,17 +169,22 @@ public class PlayerController : MonoBehaviour, IDamagable
             _isLeftPressed = false;
         }
     }
-
-    // 마우스 좌클릭을 눌렀을때 0.05초 후에 false로 바꾸기 위한 코루틴
-    private IEnumerator AttackableCount()
+    */
+    
+    private void TryAttack()
     {
-        if (!_isRightPressed) yield break;
-        _animator.SetBool("Attack", true);
-        int randIndex = UnityEngine.Random.Range(0, 3);
-        _animator.SetInteger("AttackIndex", randIndex);
+        if (_attackableTime > 0f) return;
         
-        yield return new WaitForSeconds(0.5f);
-        _animator.SetBool("Attack", false);
+        Collider[] colliders = Physics.OverlapSphere(_attackPos.position, _attackRange, _attackLayer);
+
+        foreach (Collider hit in colliders)
+        {
+            _monster = hit.GetComponentInParent<MonsterController>();
+            StartCoroutine(AttackTiming());
+            
+            Debug.Log("공격!");
+        }
+        _attackableTime = 0.5f;
         _isLeftPressed = false;
     }
 
@@ -167,6 +193,31 @@ public class PlayerController : MonoBehaviour, IDamagable
         if (_playerData.CurrentDashCooltime < _dashCooltime || _isRightPressed) return;
         _playerData.CurrentDashCooltime = 0f;
         StartCoroutine(DashCoroutine());
+    }
+    
+    private void BombSet()
+    {
+        if (_playerData.CurrentBombCooltime < _bombCoolTime) return;
+        if (_bombPrefab == null) return;
+        
+        Instantiate(_bombPrefab, transform.position, Quaternion.identity);
+
+        _playerData.CurrentBombCooltime = 0f;
+    }
+    
+    // 마우스 좌클릭을 눌렀을때 0.05초 후에 false로 바꾸기 위한 코루틴
+    private IEnumerator AttackableCount()
+    {
+        if (_isRightPressed)
+        {
+            _animator.SetBool("Attack", true);
+            int randIndex = UnityEngine.Random.Range(0, 3);
+            _animator.SetInteger("AttackIndex", randIndex);
+        }
+        
+        yield return new WaitForSeconds(0.05f);
+        _animator.SetBool("Attack", false);
+        _isLeftPressed = false;
     }
 
     private IEnumerator DashCoroutine()
@@ -201,6 +252,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     public void TakeDamage(int value)
     {
         _playerData.PlayerHp -= value;
+        Debug.Log($"{value} 데미지를 입음, 남은 체력 {_playerData.PlayerHp}");
     }
 
     private void OnMove(InputAction.CallbackContext ctx)
@@ -244,5 +296,16 @@ public class PlayerController : MonoBehaviour, IDamagable
         _isParryingPressed = true;
         
         StartCoroutine(ParryingCoroutine());
+    }
+
+    private void OnBomb(InputAction.CallbackContext ctx)
+    {
+        BombSet();
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(1f, 1f, 0f, 0.5f);
+        Gizmos.DrawSphere(_attackPos.position, _attackRange);
     }
 }

@@ -4,12 +4,7 @@ public class CameraFix : MonoBehaviour
 {
     [SerializeField] private Transform _player;
     
-    private Vector3 _offset;
-
-    private void Awake()
-    {
-        _offset = new Vector3(0f, 8f, -8f);
-    }
+    [SerializeField] private Vector3 _offset;
 
     private void Update()
     {

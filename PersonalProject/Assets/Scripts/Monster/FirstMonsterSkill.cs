@@ -1,0 +1,41 @@
+using System.Collections;
+using UnityEngine;
+
+public class FirstMonsterSkill : MonsterSkill
+{
+    [SerializeField] protected Transform _player;
+    [SerializeField] protected GameObject _parent;
+    [SerializeField] private GameObject _warningPrefab;
+    [SerializeField] private GameObject _skillPrefab;
+    
+    private SkillWarning _skillwarning;
+
+    private void Awake()
+    {
+        _skillwarning = _warningPrefab.GetComponent<SkillWarning>();
+    }
+    
+    public override void OnSkill()
+    {
+        StartCoroutine(RockDrop());
+    }
+
+    private IEnumerator RockDrop()
+    {
+        Vector3 playerPos = _player.position;
+        
+        GameObject warning = Instantiate(_warningPrefab,
+            new Vector3(playerPos.x, transform.position.y + 0.1f, playerPos.z), 
+            Quaternion.identity, 
+            _parent.transform);
+                
+        Instantiate(
+            _skillPrefab, 
+            new Vector3(playerPos.x, playerPos.y + 11f, playerPos.z),
+            Quaternion.identity);
+
+        yield return new WaitForSeconds(_skillwarning._circleSkillTime);
+        
+        Destroy(warning);
+    }
+}

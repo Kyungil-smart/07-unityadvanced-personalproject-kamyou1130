@@ -22,13 +22,23 @@ public class PlayerData
         }
     }
 
-    private float _currentDashCooltime = 0f;
+    private float _currentDashCooltime;
     public float CurrentDashCooltime
     {
         get => _currentDashCooltime;
         set
         {
             _currentDashCooltime = value;
+        }
+    }
+
+    private float _currentBombCooltime;
+    public float CurrentBombCooltime
+    {
+        get => _currentBombCooltime;
+        set
+        {
+            _currentBombCooltime = value;   
         }
     }
 }

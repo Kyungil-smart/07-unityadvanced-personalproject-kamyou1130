@@ -6,6 +6,8 @@ public class MonsterAI : MonoBehaviour
     [SerializeField] private Transform _playerTf;
     [SerializeField] private NavMeshAgent _navMeshAgent;
 
+    public bool _canMove;
+
     private void Awake()
     {
         if(_playerTf == null) _playerTf = GameObject.FindGameObjectWithTag("Player").transform;
@@ -14,7 +16,16 @@ public class MonsterAI : MonoBehaviour
 
     private void Update()
     {
-        FollowPlayer();
+        if (_canMove)
+        {
+            _navMeshAgent.isStopped = false;
+            FollowPlayer();   
+        }
+        else
+        {
+            _navMeshAgent.isStopped = true;
+            _navMeshAgent.ResetPath();
+        }
     }
 
     private void FollowPlayer()

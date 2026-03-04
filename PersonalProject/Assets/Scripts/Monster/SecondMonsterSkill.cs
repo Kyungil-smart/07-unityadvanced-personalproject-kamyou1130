@@ -23,7 +23,7 @@ public class SecondMonsterSkill : MonsterSkill
     {
         GameObject boxWarning = Instantiate(
             _warningPrefab,
-            transform.position + transform.forward * 10f,
+            new Vector3(transform.position.x, transform.position.y + 0.1f, transform.position.z) + transform.forward * 10f,
             transform.rotation,
             _parent.transform
             );

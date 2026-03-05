@@ -62,6 +62,8 @@ public class MonsterController : MonoBehaviour, IDamagable
 
     [SerializeField] private Portal _portal;
 
+    private PlayerController _playerController;
+
     private void Awake()
     {
         Init();
@@ -102,10 +104,13 @@ public class MonsterController : MonoBehaviour, IDamagable
         if (_monsterViewer == null)  _monsterViewer = FindAnyObjectByType<MonsterViewer>();
         _monsterViewer.SetHpAmount(_monsterData.CurrentMonsterHp, _monsterMaxHp);
         if (_flyObject != null) _capsuleColliderInChildren = _flyObject.GetComponent<CapsuleCollider>();
+        if (_playerController == null) _playerController = FindAnyObjectByType<PlayerController>();
     }
 
     private void Idle()
     {
+        if (_playerController._isDead) return;
+        
         if (IsPlayerInRange(_chaseRange))
         {
             _currentState = State.Chase;
@@ -149,8 +154,12 @@ public class MonsterController : MonoBehaviour, IDamagable
         {
             RotateToPlayer();
         }
-        
 
+        if (_playerController._isDead)
+        {
+            _currentState = State.Idle;
+        }
+        
         if (_monsterData.CurrentMonsterHp <= 0)
         {
             _currentState = State.Die;   

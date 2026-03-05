@@ -65,6 +65,8 @@ public class PlayerController : MonoBehaviour, IDamagable
     private Vector3 _velocity;
 
     public bool _isLock = true;
+
+    public bool _isDead;
     
     private void Awake()
     {
@@ -102,6 +104,8 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private void Update()
     {
+        if (_isDead) return;
+        
         _playerData.CurrentBombCooltime += Time.deltaTime;
         _skillIconViewer.SetBomb(_playerData.CurrentBombCooltime, _bombCoolTime);
         
@@ -113,11 +117,7 @@ public class PlayerController : MonoBehaviour, IDamagable
                 TryAttack();
             }
         }
-
-        if (IsGround())
-        {
-            
-        }
+        
         Gravity();
         
         _attackableTime += Time.deltaTime;
@@ -298,6 +298,11 @@ public class PlayerController : MonoBehaviour, IDamagable
         Debug.Log($"{value} 데미지를 입음, 남은 체력 {_playerData.CurrentPlayerHp}");
         
         _playerViewer.SetPlayerHp(_playerData.CurrentPlayerHp, _playerMaxHp);
+
+        if (_playerData.CurrentPlayerHp <= 0)
+        {
+            Die();
+        }
     }
 
     public void UnLocking()
@@ -307,7 +312,9 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private void Die()
     {
+        _animator.SetTrigger("Dead");
         
+        _isDead = true;
     }
 
     private void OnMove(InputAction.CallbackContext ctx)

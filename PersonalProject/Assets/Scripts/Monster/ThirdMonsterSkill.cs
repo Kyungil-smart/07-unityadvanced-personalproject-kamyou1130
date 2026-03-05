@@ -25,7 +25,7 @@ public class ThirdMonsterSkill : MonsterSkill
         Vector3 playerPos = _player.transform.position;
         
         GameObject warning = Instantiate(_warningPrefab,
-            new Vector3(playerPos.x, 1f, playerPos.z), 
+            new Vector3(playerPos.x, transform.position.y + 0.5f, playerPos.z), 
             Quaternion.identity, 
             _parent.transform);
         
@@ -35,7 +35,7 @@ public class ThirdMonsterSkill : MonsterSkill
                 
         Instantiate(
             _skillPrefab, 
-            new Vector3(playerPos.x, 0f, playerPos.z),
+            new Vector3(playerPos.x, transform.position.y + 0.5f, playerPos.z),
             Quaternion.identity);
     }
 }

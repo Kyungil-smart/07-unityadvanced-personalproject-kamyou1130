@@ -29,7 +29,7 @@ public class FourthMonsterSkill : MonsterSkill
         {
             warnings[i] = Instantiate(
                 _warningPrefab, 
-                new Vector3(transform.position.x - (5f * (i - (_count / 2))), 0.1f, transform.position.z), 
+                new Vector3(transform.position.x - (5f * (i - (_count / 2))), transform.position.y + 0.5f, transform.position.z), 
                 Quaternion.identity, 
                 _parent.transform);    
         }
@@ -45,7 +45,7 @@ public class FourthMonsterSkill : MonsterSkill
         {
             Instantiate(
                 _skillPrefab,
-                new Vector3(transform.position.x - (5f * (i - (_count / 2))), 0f, transform.position.z + 12f),
+                new Vector3(transform.position.x - (5f * (i - (_count / 2))), transform.position.y + 0.3f, transform.position.z + 12f),
                 Quaternion.identity);
         }
     }

@@ -268,6 +268,11 @@ public class PlayerController : MonoBehaviour, IDamagable
         _playerViewer.SetPlayerHp(_playerData.CurrentPlayerHp, _playerMaxHp);
     }
 
+    private void Die()
+    {
+        
+    }
+
     private void OnMove(InputAction.CallbackContext ctx)
     {
         _moveInput = ctx.ReadValue<Vector2>();

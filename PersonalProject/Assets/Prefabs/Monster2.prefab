@@ -100,6 +100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfbadbcef4732de4d9142cf165ba8261, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterController
+  _monsterMaxHp: 0
   _monsterAI: {fileID: 7913577177022235611}
   _player: {fileID: 0}
   _monsterSkill:
@@ -109,6 +110,7 @@ MonoBehaviour:
   _attackRange: 10
   _attackTime: 3
   _flyObject: {fileID: 140359523214778655}
+  _monsterViewer: {fileID: 0}
 --- !u!114 &7913577177022235611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,8 +155,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FourthMonsterSkill
   _parent: {fileID: 0}
-  _warningPrefab: {fileID: 1194659372892017758, guid: 00bb632c47179464dacc8f205c6ace16, type: 3}
-  _skillPrefab: {fileID: 0}
+  _warningPrefab: {fileID: 3450248583768221123, guid: e87f412fe976cb84b8e6dd9dbc7210e0, type: 3}
+  _skillPrefab: {fileID: 9073109055188392861, guid: 21fcf79ee1e165b4199eae8841db6a3c, type: 3}
   _count: 5
 --- !u!1 &3283673065241288972
 GameObject:

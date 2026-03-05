@@ -5,21 +5,21 @@ using UnityEngine;
 public class PoolManager : MonoBehaviour
 {
     public static PoolManager Instance;
-    
+
     private Dictionary<GameObject, Queue<GameObject>> _pool = new Dictionary<GameObject, Queue<GameObject>>();
 
     private void Awake()
     {
         if (Instance == null && Instance != this)
         {
-            Destroy(gameObject);
-            return;
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            Init();
         }
-        
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-        
-        Init();
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Init()
@@ -44,6 +44,11 @@ public class PoolManager : MonoBehaviour
         {
             obj = Instantiate(prefab);
             obj.name = prefab.name;
+        }
+
+        if (obj == null)
+        {
+            obj = Instantiate(prefab);
         }
 
         obj.transform.position = pos;

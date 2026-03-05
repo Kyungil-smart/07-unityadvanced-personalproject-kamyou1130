@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class PlayerData
 {
-    private int _playerHp = 100;
-    public int PlayerHp
+    private int _currentPlayerHp = 100;
+    public int CurrentPlayerHp
     {
-        get => _playerHp;
+        get => _currentPlayerHp;
         set
         {
-            _playerHp = value;
+            _currentPlayerHp = value;
         }
     }
 

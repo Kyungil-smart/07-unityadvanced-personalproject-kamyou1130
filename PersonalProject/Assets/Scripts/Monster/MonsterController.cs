@@ -13,6 +13,8 @@ public enum State
 }
 public class MonsterController : MonoBehaviour, IDamagable
 {
+    [SerializeField] private int _monsterMaxHp;
+    
     [SerializeField] private MonsterAI _monsterAI;
     [SerializeField] private Transform _player;
     [SerializeField] private List<MonsterSkill> _monsterSkill;
@@ -43,8 +45,11 @@ public class MonsterController : MonoBehaviour, IDamagable
     // 애니메이션 접근 필드
     private Animator _animator;
     
-    // Die 상태 시 콜라이더 충돌을 방지하기 위한 필드
+    // 첫번째 몬스터 Die 상태 시 콜라이더 충돌을 방지하기 위한 필드
     private CapsuleCollider _capsuleCollider;
+    
+    // 두번째 몬스터 Die 상태 시 하위 오브젝트로부터 콜라이더를 얻기 위한 필드
+    private CapsuleCollider _capsuleColliderInChildren;
 
     private bool _standing;
     private int cnt;
@@ -52,6 +57,10 @@ public class MonsterController : MonoBehaviour, IDamagable
     private Vector3 _originalPos;
     
     [SerializeField] private GameObject _flyObject;
+    
+    [SerializeField] private MonsterViewer _monsterViewer;
+
+    [SerializeField] private Portal _portal;
 
     private void Awake()
     {
@@ -85,9 +94,14 @@ public class MonsterController : MonoBehaviour, IDamagable
         if (_monsterAI == null) _monsterAI = FindAnyObjectByType<MonsterAI>();
         if (_animator == null) _animator = GetComponentInChildren<Animator>();
         _monsterData = new MonsterData();
+        _monsterData.CurrentMonsterHp = _monsterMaxHp;
         _currentState = State.Idle;
         _capsuleCollider = GetComponent<CapsuleCollider>();
+        if (_player == null) _player = GameObject.FindGameObjectWithTag("Player").transform;
         if (_flyObject != null) _originalPos = _flyObject.transform.position;
+        if (_monsterViewer == null)  _monsterViewer = FindAnyObjectByType<MonsterViewer>();
+        _monsterViewer.SetHpAmount(_monsterData.CurrentMonsterHp, _monsterMaxHp);
+        if (_flyObject != null) _capsuleColliderInChildren = _flyObject.GetComponent<CapsuleCollider>();
     }
 
     private void Idle()
@@ -103,7 +117,7 @@ public class MonsterController : MonoBehaviour, IDamagable
         _monsterAI._canMove = true;
         _animator.SetFloat("MoveSpeed", 1f);
         
-        if (_monsterData.MonsterHp <= 0)
+        if (_monsterData.CurrentMonsterHp <= 0)
         {
             _monsterAI._canMove = false;
             _currentState = State.Die;
@@ -137,7 +151,7 @@ public class MonsterController : MonoBehaviour, IDamagable
         }
         
 
-        if (_monsterData.MonsterHp <= 0)
+        if (_monsterData.CurrentMonsterHp <= 0)
         {
             _currentState = State.Die;   
         }
@@ -157,12 +171,12 @@ public class MonsterController : MonoBehaviour, IDamagable
         
         _knowkDownTime += Time.deltaTime;
         
-        if (_flyObject.transform.position.y > 0f &&  _knowkDownTime < 5f)
+        if (_flyObject.transform.position.y > _originalPos.y - 3.5f &&  _knowkDownTime < 3f)
         {
             _flyObject.transform.position += Vector3.down * (5f * Time.deltaTime);
         }
 
-        if (_flyObject.transform.position.y < _originalPos.y && _knowkDownTime >= 4f)
+        if (_flyObject.transform.position.y < _originalPos.y && _knowkDownTime >= 3f)
         {
             _flyObject.transform.position += Vector3.up * (5f * Time.deltaTime);
             if (_flyObject.transform.position.y > _originalPos.y - 0.1f)
@@ -171,7 +185,7 @@ public class MonsterController : MonoBehaviour, IDamagable
             }
         }
         
-        if (_monsterData.MonsterHp <= 0)
+        if (_monsterData.CurrentMonsterHp <= 0)
         {
             _currentState = State.Die;
         }
@@ -202,7 +216,19 @@ public class MonsterController : MonoBehaviour, IDamagable
     private void Die()
     {
         _animator.SetTrigger("Dead");
-        _capsuleCollider.enabled = false;
+        if (_capsuleCollider != null)
+        {
+            _capsuleCollider.enabled = false;   
+        }
+
+        if (_capsuleColliderInChildren != null)
+        {
+            _capsuleColliderInChildren.enabled = false;
+        }
+
+        if (_portal == null) return;
+        
+        StartCoroutine(OpenPortalTime());
     }
 
     private void RotateToPlayer()
@@ -218,13 +244,16 @@ public class MonsterController : MonoBehaviour, IDamagable
     
     public void TakeDamage(int value)
     {
-        _monsterData.MonsterHp -= value;
+        _monsterData.CurrentMonsterHp -= value;
+        
+        _monsterViewer.SetHpAmount(_monsterData.CurrentMonsterHp, _monsterMaxHp);
     }
 
-    private IEnumerator KnockDown()
+    private IEnumerator OpenPortalTime()
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(3f);
         
+        _portal.OpenPortal();
     }
     
     private IEnumerator Attacking()

@@ -10,14 +10,14 @@ public class AudioManager : MonoBehaviour
     {
         if (Instance == null && Instance != this)
         {
-            Destroy(gameObject);
-            return;
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            Init();
         }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-
-        Init();
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Init()
@@ -32,9 +32,9 @@ public class AudioManager : MonoBehaviour
         
         GameObject obj = PoolManager.Instance.Get(Resources.Load<GameObject>("AudioSFX"), Vector3.zero, Quaternion.identity);
 
-        if (obj.TryGetComponent(out AudioSource audioSource))
+        if (obj.TryGetComponent(out AudioPlayer audioPlayer))
         {
-            
+            audioPlayer.Setup(_prefab, clip, volume, pitch);
         }
     }
 }

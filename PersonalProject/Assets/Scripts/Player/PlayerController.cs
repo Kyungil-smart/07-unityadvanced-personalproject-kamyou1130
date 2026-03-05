@@ -29,12 +29,12 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     // 플레이어 대쉬 접근 필드
     [SerializeField] private float _dashSpeed;
-    [SerializeField] private float _dashCooltime;
+    [SerializeField] private float _dashCoolTime;
     
     // 플레이어 오브젝트 회전을 위한 필드
     private Ray _rotateRay;
-    public LayerMask _layerMask;
-    private Camera _camera;
+    [SerializeField] private LayerMask _layerMask;
+    public Camera _camera;
     
     // New InputActionSystem 입력을 위한 필드
     private NewInputAction _inputAction;
@@ -55,9 +55,20 @@ public class PlayerController : MonoBehaviour, IDamagable
     // 폭탄 설치 코루틴 접근 필드
     [SerializeField] private GameObject _bombPrefab;
     [SerializeField] private float _bombCoolTime;
+
+    // MVP 패턴을 위한 클래스 선언 필드
+    private PlayerViewer _playerViewer;
+    [SerializeField] private int _playerMaxHp;
+    private SkillIconViewer _skillIconViewer;
+    
+    // 중력을 받기 위한 필드
+    private Vector3 _velocity;
+
+    public bool _isLock = true;
     
     private void Awake()
     {
+        DontDestroyOnLoad(gameObject);
         Init();
     }
     
@@ -92,6 +103,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     private void Update()
     {
         _playerData.CurrentBombCooltime += Time.deltaTime;
+        _skillIconViewer.SetBomb(_playerData.CurrentBombCooltime, _bombCoolTime);
         
         if (_isRightPressed)
         {
@@ -102,13 +114,21 @@ public class PlayerController : MonoBehaviour, IDamagable
             }
         }
 
-        _attackableTime -= Time.deltaTime;
-        if (_attackableTime <= 0f)
+        if (IsGround())
+        {
+            
+        }
+        Gravity();
+        
+        _attackableTime += Time.deltaTime;
+        _skillIconViewer.SetAttack(_attackableTime, 0.5f);
+        if (_attackableTime >= 0.5f)
         {
             Movement();
         }
         
         _playerData.CurrentDashCooltime += Time.deltaTime;
+        _skillIconViewer.SetDash(_playerData.CurrentDashCooltime, _dashCoolTime);
         if (_dashPressed)
         {
             _dashPressed = false;
@@ -123,10 +143,16 @@ public class PlayerController : MonoBehaviour, IDamagable
         if (_sphereCollider == null) _sphereCollider = GetComponent<SphereCollider>();
         _inputAction = new NewInputAction();
         _playerData = new PlayerData();
+        _playerData.CurrentPlayerHp = _playerMaxHp;
         _camera = Camera.main;
         _dashPressed = false;
         _animator = GetComponentInChildren<Animator>();
+        _playerData.CurrentDashCooltime = _dashCoolTime;
         _playerData.CurrentBombCooltime = _bombCoolTime;
+        _attackableTime = 0.5f;
+        if (_playerViewer == null) _playerViewer = FindAnyObjectByType<PlayerViewer>();
+        _playerViewer.SetPlayerHp(_playerData.CurrentPlayerHp, _playerMaxHp);
+        if (_skillIconViewer == null) _skillIconViewer = FindAnyObjectByType<SkillIconViewer>();
     }
     
     private void Movement()
@@ -173,7 +199,12 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     private void TryAttack()
     {
-        if (_attackableTime > 0f) return;
+        if (_attackableTime < 0.5f) return;
+        
+        _animator.SetTrigger("Attack");
+        int randIndex = UnityEngine.Random.Range(0, 3);
+        _animator.SetInteger("AttackIndex", randIndex);
+        AudioManager.Instance.PlaySound(Resources.Load<AudioClip>("Audio/Slash"));
         
         Collider[] colliders = Physics.OverlapSphere(_attackPos.position, _attackRange, _attackLayer);
 
@@ -184,19 +215,20 @@ public class PlayerController : MonoBehaviour, IDamagable
             
             Debug.Log("공격!");
         }
-        _attackableTime = 0.5f;
-        _isLeftPressed = false;
+
+        _attackableTime = 0f;
     }
 
     private void Dash()
     {
-        if (_playerData.CurrentDashCooltime < _dashCooltime || _isRightPressed) return;
+        if (_playerData.CurrentDashCooltime < _dashCoolTime || _isRightPressed) return;
         _playerData.CurrentDashCooltime = 0f;
         StartCoroutine(DashCoroutine());
     }
     
     private void BombSet()
     {
+        if (_isLock) return;
         if (_playerData.CurrentBombCooltime < _bombCoolTime) return;
         if (_bombPrefab == null) return;
         
@@ -204,19 +236,30 @@ public class PlayerController : MonoBehaviour, IDamagable
 
         _playerData.CurrentBombCooltime = 0f;
     }
+
+    private void Gravity()
+    {
+        _velocity.y += Physics.gravity.y * Time.deltaTime;
+        _characterController.Move(_velocity * Time.deltaTime);
+    }
+
+    private bool IsGround()
+    {
+        Vector3 ray = transform.position + Vector3.up * 0.1f;
+
+        if (Physics.Raycast(ray, Vector3.down, 0.1f, _layerMask))
+        {
+            return true;
+        }
+        
+        return false;
+    }
     
     // 마우스 좌클릭을 눌렀을때 0.05초 후에 false로 바꾸기 위한 코루틴
     private IEnumerator AttackableCount()
     {
-        if (_isRightPressed)
-        {
-            _animator.SetBool("Attack", true);
-            int randIndex = UnityEngine.Random.Range(0, 3);
-            _animator.SetInteger("AttackIndex", randIndex);
-        }
-        
         yield return new WaitForSeconds(0.05f);
-        _animator.SetBool("Attack", false);
+
         _isLeftPressed = false;
     }
 
@@ -251,8 +294,20 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     public void TakeDamage(int value)
     {
-        _playerData.PlayerHp -= value;
-        Debug.Log($"{value} 데미지를 입음, 남은 체력 {_playerData.PlayerHp}");
+        _playerData.CurrentPlayerHp -= value;
+        Debug.Log($"{value} 데미지를 입음, 남은 체력 {_playerData.CurrentPlayerHp}");
+        
+        _playerViewer.SetPlayerHp(_playerData.CurrentPlayerHp, _playerMaxHp);
+    }
+
+    public void UnLocking()
+    {
+        _skillIconViewer.UnLock();
+    }
+
+    private void Die()
+    {
+        
     }
 
     private void OnMove(InputAction.CallbackContext ctx)

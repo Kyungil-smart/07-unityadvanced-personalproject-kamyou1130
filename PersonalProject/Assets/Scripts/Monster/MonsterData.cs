@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class MonsterData
 {
-    private int _monsterHp = 200;
-    public int MonsterHp
+    private int _currentMonsterHp;
+    public int CurrentMonsterHp
     {
-        get => _monsterHp;
+        get => _currentMonsterHp;
         set
         {
-            _monsterHp = value;
+            _currentMonsterHp = value;
         }
     }
 }

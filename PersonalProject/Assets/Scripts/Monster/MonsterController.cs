@@ -13,6 +13,8 @@ public enum State
 }
 public class MonsterController : MonoBehaviour, IDamagable
 {
+    [SerializeField] private int _monsterMaxHp;
+    
     [SerializeField] private MonsterAI _monsterAI;
     [SerializeField] private Transform _player;
     [SerializeField] private List<MonsterSkill> _monsterSkill;
@@ -52,6 +54,8 @@ public class MonsterController : MonoBehaviour, IDamagable
     private Vector3 _originalPos;
     
     [SerializeField] private GameObject _flyObject;
+    
+    [SerializeField] private MonsterViewer _monsterViewer;
 
     private void Awake()
     {
@@ -85,9 +89,12 @@ public class MonsterController : MonoBehaviour, IDamagable
         if (_monsterAI == null) _monsterAI = FindAnyObjectByType<MonsterAI>();
         if (_animator == null) _animator = GetComponentInChildren<Animator>();
         _monsterData = new MonsterData();
+        _monsterData.CurrentMonsterHp = _monsterMaxHp;
         _currentState = State.Idle;
         _capsuleCollider = GetComponent<CapsuleCollider>();
         if (_flyObject != null) _originalPos = _flyObject.transform.position;
+        if (_monsterViewer == null)  _monsterViewer = FindAnyObjectByType<MonsterViewer>();
+        _monsterViewer.SetHpAmount(_monsterData.CurrentMonsterHp, _monsterMaxHp);
     }
 
     private void Idle()
@@ -103,7 +110,7 @@ public class MonsterController : MonoBehaviour, IDamagable
         _monsterAI._canMove = true;
         _animator.SetFloat("MoveSpeed", 1f);
         
-        if (_monsterData.MonsterHp <= 0)
+        if (_monsterData.CurrentMonsterHp <= 0)
         {
             _monsterAI._canMove = false;
             _currentState = State.Die;
@@ -137,7 +144,7 @@ public class MonsterController : MonoBehaviour, IDamagable
         }
         
 
-        if (_monsterData.MonsterHp <= 0)
+        if (_monsterData.CurrentMonsterHp <= 0)
         {
             _currentState = State.Die;   
         }
@@ -171,7 +178,7 @@ public class MonsterController : MonoBehaviour, IDamagable
             }
         }
         
-        if (_monsterData.MonsterHp <= 0)
+        if (_monsterData.CurrentMonsterHp <= 0)
         {
             _currentState = State.Die;
         }
@@ -218,7 +225,9 @@ public class MonsterController : MonoBehaviour, IDamagable
     
     public void TakeDamage(int value)
     {
-        _monsterData.MonsterHp -= value;
+        _monsterData.CurrentMonsterHp -= value;
+        
+        _monsterViewer.SetHpAmount(_monsterData.CurrentMonsterHp, _monsterMaxHp);
     }
 
     private IEnumerator KnockDown()

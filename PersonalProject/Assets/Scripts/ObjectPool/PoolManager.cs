@@ -10,16 +10,16 @@ public class PoolManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null && Instance != this)
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            Init();
+        }
+        else
         {
             Destroy(gameObject);
-            return;
         }
-        
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-        
-        Init();
     }
 
     private void Init()

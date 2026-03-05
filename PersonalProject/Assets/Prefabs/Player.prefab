@@ -55,8 +55,8 @@ CharacterController:
   serializedVersion: 3
   m_Height: 1.6
   m_Radius: 0.5
-  m_SlopeLimit: 0
-  m_StepOffset: 0.1
+  m_SlopeLimit: 10
+  m_StepOffset: 0.5
   m_SkinWidth: 0.02
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
@@ -82,13 +82,15 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   _dashSpeed: 20
-  _dashCooltime: 10
+  _dashCoolTime: 8
   _layerMask:
     serializedVersion: 2
     m_Bits: 64
   _isParryingPressed: 0
   _bombPrefab: {fileID: 4589462692471021725, guid: ce484d7f789568d419e578dd7967053e, type: 3}
   _bombCoolTime: 2
+  _playerMaxHp: 100
+  _isLock: 1
 --- !u!1 &2080682064406832083
 GameObject:
   m_ObjectHideFlags: 0

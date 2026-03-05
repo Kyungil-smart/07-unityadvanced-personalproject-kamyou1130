@@ -57,6 +57,8 @@ public class MonsterController : MonoBehaviour, IDamagable
     
     [SerializeField] private MonsterViewer _monsterViewer;
 
+    [SerializeField] private Portal _portal;
+
     private void Awake()
     {
         Init();
@@ -92,6 +94,7 @@ public class MonsterController : MonoBehaviour, IDamagable
         _monsterData.CurrentMonsterHp = _monsterMaxHp;
         _currentState = State.Idle;
         _capsuleCollider = GetComponent<CapsuleCollider>();
+        if (_player == null) _player = GameObject.FindGameObjectWithTag("Player").transform;
         if (_flyObject != null) _originalPos = _flyObject.transform.position;
         if (_monsterViewer == null)  _monsterViewer = FindAnyObjectByType<MonsterViewer>();
         _monsterViewer.SetHpAmount(_monsterData.CurrentMonsterHp, _monsterMaxHp);
@@ -164,12 +167,12 @@ public class MonsterController : MonoBehaviour, IDamagable
         
         _knowkDownTime += Time.deltaTime;
         
-        if (_flyObject.transform.position.y > 0f &&  _knowkDownTime < 5f)
+        if (_flyObject.transform.position.y > _originalPos.y - 3.5f &&  _knowkDownTime < 3f)
         {
             _flyObject.transform.position += Vector3.down * (5f * Time.deltaTime);
         }
 
-        if (_flyObject.transform.position.y < _originalPos.y && _knowkDownTime >= 4f)
+        if (_flyObject.transform.position.y < _originalPos.y && _knowkDownTime >= 3f)
         {
             _flyObject.transform.position += Vector3.up * (5f * Time.deltaTime);
             if (_flyObject.transform.position.y > _originalPos.y - 0.1f)
@@ -210,6 +213,10 @@ public class MonsterController : MonoBehaviour, IDamagable
     {
         _animator.SetTrigger("Dead");
         _capsuleCollider.enabled = false;
+
+        if (_portal == null) return;
+        
+        StartCoroutine(OpenPortalTime());
     }
 
     private void RotateToPlayer()
@@ -230,10 +237,11 @@ public class MonsterController : MonoBehaviour, IDamagable
         _monsterViewer.SetHpAmount(_monsterData.CurrentMonsterHp, _monsterMaxHp);
     }
 
-    private IEnumerator KnockDown()
+    private IEnumerator OpenPortalTime()
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(3f);
         
+        _portal.OpenPortal();
     }
     
     private IEnumerator Attacking()

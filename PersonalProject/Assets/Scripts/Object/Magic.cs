@@ -42,6 +42,14 @@ public class Magic : MonoBehaviour
 
     private void OnDestroy()
     {
-        Instantiate(_tornadoPrefab, transform.position, Quaternion.identity);
+        Vector3 ray = transform.position + Vector3.up * 5f;
+        Vector3 hitPoint = new Vector3();
+            
+        if (Physics.Raycast(ray, Vector3.down, out RaycastHit hit, 10f, LayerMask.GetMask("Ground")))
+        {
+             hitPoint = hit.point;
+        }
+        
+        Instantiate(_tornadoPrefab, hitPoint, Quaternion.identity);
     }
 }

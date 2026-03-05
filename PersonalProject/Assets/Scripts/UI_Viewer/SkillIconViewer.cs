@@ -13,6 +13,7 @@ public class SkillIconViewer : MonoBehaviour
     
     [SerializeField] private Image _fillBombImage;
     [SerializeField] private TextMeshProUGUI _bombCooltimeText;
+    [SerializeField] private Image _bombLockIcon;
     
     public void SetAttack(float currentTime, float maxTime)
     {
@@ -77,6 +78,10 @@ public class SkillIconViewer : MonoBehaviour
         {
             _bombCooltimeText.text = "";
         }
+    }
 
+    public void UnLock()
+    {
+        _bombLockIcon.enabled = false;
     }
 }

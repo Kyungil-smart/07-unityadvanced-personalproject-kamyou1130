@@ -33,8 +33,8 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     // 플레이어 오브젝트 회전을 위한 필드
     private Ray _rotateRay;
-    public LayerMask _layerMask;
-    private Camera _camera;
+    [SerializeField] private LayerMask _layerMask;
+    public Camera _camera;
     
     // New InputActionSystem 입력을 위한 필드
     private NewInputAction _inputAction;
@@ -61,8 +61,14 @@ public class PlayerController : MonoBehaviour, IDamagable
     [SerializeField] private int _playerMaxHp;
     private SkillIconViewer _skillIconViewer;
     
+    // 중력을 받기 위한 필드
+    private Vector3 _velocity;
+
+    public bool _isLock = true;
+    
     private void Awake()
     {
+        DontDestroyOnLoad(gameObject);
         Init();
     }
     
@@ -108,6 +114,12 @@ public class PlayerController : MonoBehaviour, IDamagable
             }
         }
 
+        if (IsGround())
+        {
+            
+        }
+        Gravity();
+        
         _attackableTime += Time.deltaTime;
         _skillIconViewer.SetAttack(_attackableTime, 0.5f);
         if (_attackableTime >= 0.5f)
@@ -137,6 +149,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _animator = GetComponentInChildren<Animator>();
         _playerData.CurrentDashCooltime = _dashCoolTime;
         _playerData.CurrentBombCooltime = _bombCoolTime;
+        _attackableTime = 0.5f;
         if (_playerViewer == null) _playerViewer = FindAnyObjectByType<PlayerViewer>();
         _playerViewer.SetPlayerHp(_playerData.CurrentPlayerHp, _playerMaxHp);
         if (_skillIconViewer == null) _skillIconViewer = FindAnyObjectByType<SkillIconViewer>();
@@ -215,12 +228,31 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     private void BombSet()
     {
+        if (_isLock) return;
         if (_playerData.CurrentBombCooltime < _bombCoolTime) return;
         if (_bombPrefab == null) return;
         
         Instantiate(_bombPrefab, transform.position, Quaternion.identity);
 
         _playerData.CurrentBombCooltime = 0f;
+    }
+
+    private void Gravity()
+    {
+        _velocity.y += Physics.gravity.y * Time.deltaTime;
+        _characterController.Move(_velocity * Time.deltaTime);
+    }
+
+    private bool IsGround()
+    {
+        Vector3 ray = transform.position + Vector3.up * 0.1f;
+
+        if (Physics.Raycast(ray, Vector3.down, 0.1f, _layerMask))
+        {
+            return true;
+        }
+        
+        return false;
     }
     
     // 마우스 좌클릭을 눌렀을때 0.05초 후에 false로 바꾸기 위한 코루틴
@@ -266,6 +298,11 @@ public class PlayerController : MonoBehaviour, IDamagable
         Debug.Log($"{value} 데미지를 입음, 남은 체력 {_playerData.CurrentPlayerHp}");
         
         _playerViewer.SetPlayerHp(_playerData.CurrentPlayerHp, _playerMaxHp);
+    }
+
+    public void UnLocking()
+    {
+        _skillIconViewer.UnLock();
     }
 
     private void Die()

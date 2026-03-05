@@ -12,6 +12,7 @@ public class ThirdMonsterSkill : MonsterSkill
     
     private void Awake()
     {
+        if (_player == null) _player = GameObject.FindGameObjectWithTag("Player").transform;
         _skillwarning = _warningPrefab.GetComponent<SkillWarning>();
     }
     
@@ -35,7 +36,7 @@ public class ThirdMonsterSkill : MonsterSkill
                 
         Instantiate(
             _skillPrefab, 
-            new Vector3(playerPos.x, transform.position.y + 0.5f, playerPos.z),
+            new Vector3(playerPos.x, transform.position.y + 0.3f, playerPos.z),
             Quaternion.identity);
     }
 }

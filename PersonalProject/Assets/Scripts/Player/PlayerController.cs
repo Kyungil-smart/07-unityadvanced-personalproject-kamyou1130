@@ -60,18 +60,18 @@ public class PlayerController : MonoBehaviour, IDamagable
     private PlayerViewer _playerViewer;
     [SerializeField] private int _playerMaxHp;
     private SkillIconViewer _skillIconViewer;
+    private RetryViewer _retryViewer;
     
     // 중력을 받기 위한 필드
     private Vector3 _velocity;
 
-    public bool _isLock = true;
+    public bool _isLock;
 
     public bool _isDead;
-    
+
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
-        Init();
+        Init();    
     }
 
     private void Start()
@@ -151,6 +151,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _playerData.CurrentPlayerHp = _playerMaxHp;
         _camera = Camera.main;
         _dashPressed = false;
+        _isLock = true;
         _animator = GetComponentInChildren<Animator>();
         _playerData.CurrentDashCooltime = _dashCoolTime;
         _playerData.CurrentBombCooltime = _bombCoolTime;
@@ -297,6 +298,17 @@ public class PlayerController : MonoBehaviour, IDamagable
         _isParryingPressed = false;
     }
 
+    private IEnumerator ActiveRetryPanel()
+    {
+        yield return new WaitForSeconds(2f);
+        
+        if (_retryViewer == null) _retryViewer = FindAnyObjectByType<RetryViewer>();
+        if (_retryViewer != null)
+        {
+            _retryViewer.SetActivePanel();
+        }
+    }
+
     public void TakeDamage(int value)
     {
         _playerData.CurrentPlayerHp -= value;
@@ -320,6 +332,8 @@ public class PlayerController : MonoBehaviour, IDamagable
         _animator.SetTrigger("Dead");
         
         _isDead = true;
+
+        StartCoroutine(ActiveRetryPanel());
     }
 
     private void OnMove(InputAction.CallbackContext ctx)

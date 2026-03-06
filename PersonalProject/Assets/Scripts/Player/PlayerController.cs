@@ -73,6 +73,11 @@ public class PlayerController : MonoBehaviour, IDamagable
         DontDestroyOnLoad(gameObject);
         Init();
     }
+
+    private void Start()
+    {
+        SceneManage.Instance.RegisterPlayer(gameObject);
+    }
     
     private void OnEnable()
     {

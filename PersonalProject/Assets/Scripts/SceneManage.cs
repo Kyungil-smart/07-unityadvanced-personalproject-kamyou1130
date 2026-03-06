@@ -13,17 +13,11 @@ public class SceneManage : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            Init();
         }
         else
         {
             Destroy(gameObject);
         }
-    }
-
-    private void Init()
-    {
-        if (_playerController == null) _playerController = FindAnyObjectByType<PlayerController>();
     }
     
     public void LoadScene(string sceneName)
@@ -40,5 +34,10 @@ public class SceneManage : MonoBehaviour
     public void LoadScene(int sceneIndex)
     {
         SceneManager.LoadScene(sceneIndex);
+    }
+
+    public void RegisterPlayer(GameObject player)
+    {
+        _playerController = player.GetComponent<PlayerController>();
     }
 }

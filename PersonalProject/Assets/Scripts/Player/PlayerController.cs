@@ -1,9 +1,6 @@
 using System.Collections;
-using Unity.VisualScripting;
-using UnityEditor.Searcher;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Random = System.Random;
 
 public class PlayerController : MonoBehaviour, IDamagable
 {
